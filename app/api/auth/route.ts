@@ -22,10 +22,11 @@ function parseAndValidate(initData: string, botToken: string): TgUser | null {
   if (!hash) return null;
   params.delete("hash");
 
-  const dataCheckString = [...params.entries()]
-    .map(([k, v]) => `${k}=${v}`)
-    .sort()
-    .join("\n");
+  const pairs: string[] = [];
+  params.forEach((v, k) => {
+    pairs.push(`${k}=${v}`);
+  });
+  const dataCheckString = pairs.sort().join("\n");
 
   const secretKey = crypto
     .createHmac("sha256", "WebAppData")
