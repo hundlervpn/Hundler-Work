@@ -102,6 +102,12 @@ h1, h2, h3 {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Theme-aware logo swap: dark logo by default, light-theme logo when html.light */
+.logo-dark { display: block; }
+.logo-light { display: none; }
+html.light .logo-dark { display: none; }
+html.light .logo-light { display: block; }
+
 /* Splash screen (entry logo) */
 @keyframes splashIn {
   0% { opacity: 0; transform: scale(0.82); filter: blur(10px); }

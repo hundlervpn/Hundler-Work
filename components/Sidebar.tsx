@@ -38,7 +38,14 @@ export function Sidebar({
         <img
           src="/logo.png"
           alt="Hundler Work"
-          className="h-10 w-10 shrink-0 object-contain"
+          className="logo-dark h-10 w-10 shrink-0 object-contain"
+          draggable={false}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo-light.png"
+          alt="Hundler Work"
+          className="logo-light h-10 w-10 shrink-0 object-contain"
           draggable={false}
         />
         <div className="leading-tight">

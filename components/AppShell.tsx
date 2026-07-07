@@ -10,29 +10,28 @@ import { MyOrders } from "./tabs/MyOrders";
 import { Chats } from "./tabs/Chats";
 import { Profile } from "./tabs/Profile";
 import type { TabKey, ThemeMode, Role } from "@/lib/nav";
+import { getCookie, setCookie } from "@/lib/cookies";
 
 export function AppShell() {
   const [active, setActive] = React.useState<TabKey>("find");
   const [theme, setTheme] = React.useState<ThemeMode>("dark");
   const [role, setRole] = React.useState<Role>("freelancer");
 
-  // Load persisted preferences on mount.
+  // Load persisted preferences on mount (theme from cookie, role from localStorage).
   React.useEffect(() => {
+    const t = getCookie("hw-theme");
+    if (t === "light" || t === "dark") setTheme(t);
     try {
-      const t = localStorage.getItem("hw-theme");
-      if (t === "light" || t === "dark") setTheme(t);
       const r = localStorage.getItem("hw-role");
       if (r === "client" || r === "freelancer") setRole(r);
     } catch {}
   }, []);
 
-  // Apply + persist theme.
+  // Apply + persist theme (in a cookie).
   React.useEffect(() => {
     const el = document.documentElement;
     el.classList.toggle("light", theme === "light");
-    try {
-      localStorage.setItem("hw-theme", theme);
-    } catch {}
+    setCookie("hw-theme", theme);
   }, [theme]);
 
   // Persist role.

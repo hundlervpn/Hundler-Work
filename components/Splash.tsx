@@ -20,10 +20,14 @@ export function Splash() {
 
   if (gone) return null;
 
+  const imgClass = `relative h-64 w-64 max-w-[72vw] select-none object-contain sm:h-80 sm:w-80 ${
+    leaving ? "splash-logo-out" : "splash-logo-in"
+  }`;
+
   return (
     <div
       aria-hidden
-      className={`fixed inset-0 z-50 grid place-items-center bg-[#050506] transition-opacity duration-500 ease-out ${
+      className={`fixed inset-0 z-50 grid place-items-center bg-base transition-opacity duration-500 ease-out ${
         leaving ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
@@ -34,9 +38,14 @@ export function Splash() {
           src="/logo.png"
           alt="Hundler Work"
           draggable={false}
-          className={`relative h-64 w-64 max-w-[72vw] select-none object-contain sm:h-80 sm:w-80 ${
-            leaving ? "splash-logo-out" : "splash-logo-in"
-          }`}
+          className={`logo-dark ${imgClass}`}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo-light.png"
+          alt="Hundler Work"
+          draggable={false}
+          className={`logo-light ${imgClass}`}
         />
       </div>
     </div>

@@ -14,8 +14,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// Applies the saved theme class before paint to avoid a flash of the wrong theme.
-const themeInit = `try{var t=localStorage.getItem('hw-theme');if(t==='light'){document.documentElement.classList.add('light');}}catch(e){}`;
+// Applies the saved theme (from cookie) before paint to avoid a flash of the wrong theme.
+const themeInit = `try{var m=document.cookie.match(/(?:^|; )hw-theme=([^;]*)/);var t=m?decodeURIComponent(m[1]):null;if(t==='light'){document.documentElement.classList.add('light');}}catch(e){}`;
 
 export default function RootLayout({
   children,
