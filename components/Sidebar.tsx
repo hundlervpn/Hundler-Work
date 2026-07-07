@@ -9,6 +9,7 @@ import {
   BellIcon,
 } from "./icons";
 import type { TabKey } from "@/lib/nav";
+import { useUser } from "./UserProvider";
 
 const ITEMS: {
   key: TabKey;
@@ -31,6 +32,12 @@ export function Sidebar({
   onChange: (k: TabKey) => void;
   roleLabel: string;
 }) {
+  const { user } = useUser();
+  const displayName = user
+    ? [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+      user.username ||
+      "mihailzareckij10"
+    : "mihailzareckij10";
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-hair bg-surface px-4 py-6 lg:flex">
       <div className="flex items-center gap-2.5 px-2">
@@ -80,12 +87,21 @@ export function Sidebar({
       </nav>
 
       <div className="mt-auto flex items-center gap-3 rounded-2xl bg-raise p-3 shadow-border">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-red to-brand-red-deep font-bold text-white">
-          M
-        </div>
+        {user?.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={user.photoUrl}
+            alt={displayName}
+            className="h-10 w-10 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-red to-brand-red-deep font-bold text-white">
+            {displayName[0]?.toUpperCase()}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-semibold text-ink">
-            mihailzareckij10
+            {displayName}
           </div>
           <div className="text-[11px] text-ink-muted">{roleLabel}</div>
         </div>

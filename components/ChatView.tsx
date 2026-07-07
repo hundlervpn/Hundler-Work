@@ -24,6 +24,15 @@ export function ChatView({ chat, onBack }: { chat: Chat; onBack: () => void }) {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
+  // Lock background scroll while the fullscreen chat is open.
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   const send = () => {
     const text = draft.trim();
     if (!text) return;
@@ -40,51 +49,51 @@ export function ChatView({ chat, onBack }: { chat: Chat; onBack: () => void }) {
   };
 
   return (
-    <div className="flex h-[78dvh] flex-col overflow-hidden rounded-3xl bg-card shadow-border lg:h-[76vh]">
+    <div className="fixed inset-0 z-[60] flex flex-col bg-base">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-hair px-3 py-3">
+      <div
+        className="flex items-center gap-3 border-b border-hair bg-surface px-3 py-3"
+        style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
+      >
         <button
           onClick={onBack}
           aria-label="Назад"
-          className="press grid h-10 w-10 place-items-center rounded-full text-ink-muted hover:bg-raise hover:text-ink"
+          className="press grid h-10 w-10 shrink-0 place-items-center rounded-full text-ink hover:bg-raise"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-6 w-6" />
         </button>
-        <div
-          className={`grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br text-sm font-bold text-white shadow-border ${
-            chat.accent === "violet"
-              ? "from-brand-violet to-brand-red/60"
-              : "from-brand-red to-brand-red-deep"
-          }`}
-        >
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-red to-brand-red-deep text-sm font-bold text-white">
           {initials(chat.name)}
         </div>
         <div className="min-w-0 flex-1">
           <div className="truncate font-semibold text-ink">{chat.name}</div>
           <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-red-bright" />
-            {chat.role} · в сети
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            в сети
           </div>
         </div>
+        <span className="rounded-full bg-raise px-2 py-1 text-[11px] text-ink-muted">
+          {chat.role}
+        </span>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-2.5 overflow-y-auto px-4 py-4">
+      <div className="flex-1 space-y-2 overflow-y-auto px-3 py-4">
         {messages.map((m) => (
           <div
             key={m.id}
             className={`flex ${m.mine ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[78%] rounded-2xl px-3.5 py-2 text-sm shadow-border ${
+              className={`max-w-[78%] rounded-2xl px-3.5 py-2 text-[15px] shadow-border ${
                 m.mine
-                  ? "rounded-br-md bg-gradient-to-br from-brand-red to-brand-red-deep text-white"
-                  : "rounded-bl-md bg-raise text-ink"
+                  ? "bg-gradient-to-br from-brand-red to-brand-red-deep text-white"
+                  : "bg-card text-ink"
               }`}
             >
-              <p className="text-pretty leading-snug">{m.text}</p>
+              <div className="text-pretty">{m.text}</div>
               <div
-                className={`mt-1 text-right text-[10px] tnum ${
+                className={`mt-0.5 text-right text-[10px] ${
                   m.mine ? "text-white/70" : "text-ink-muted"
                 }`}
               >
@@ -97,7 +106,10 @@ export function ChatView({ chat, onBack }: { chat: Chat; onBack: () => void }) {
       </div>
 
       {/* Input */}
-      <div className="flex items-center gap-2 border-t border-hair p-3">
+      <div
+        className="flex items-center gap-2 border-t border-hair bg-surface p-3"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+      >
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -105,7 +117,8 @@ export function ChatView({ chat, onBack }: { chat: Chat; onBack: () => void }) {
             if (e.key === "Enter") send();
           }}
           placeholder="Сообщение…"
-          className="min-w-0 flex-1 rounded-2xl bg-raise px-4 py-3 text-sm text-ink placeholder:text-ink-muted shadow-border focus:shadow-border-hover focus:outline-none"
+          /* text-base (16px) prevents mobile browsers from auto-zooming on focus */
+          className="min-w-0 flex-1 rounded-2xl bg-raise px-4 py-3 text-base text-ink placeholder:text-ink-muted shadow-border focus:shadow-border-hover focus:outline-none"
         />
         <button
           onClick={send}

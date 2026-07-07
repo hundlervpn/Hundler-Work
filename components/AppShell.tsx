@@ -11,6 +11,7 @@ import { Chats } from "./tabs/Chats";
 import { Profile } from "./tabs/Profile";
 import type { TabKey, ThemeMode, Role } from "@/lib/nav";
 import { getCookie, setCookie } from "@/lib/cookies";
+import { UserProvider } from "./UserProvider";
 
 export function AppShell() {
   const [active, setActive] = React.useState<TabKey>("find");
@@ -66,7 +67,7 @@ export function AppShell() {
   }, [active, theme, role]);
 
   return (
-    <>
+    <UserProvider>
       <Splash />
       <div className="flex min-h-dvh bg-base">
         <Sidebar active={active} onChange={setActive} roleLabel={roleLabel} />
@@ -87,6 +88,6 @@ export function AppShell() {
           <BottomNav active={active} onChange={setActive} />
         </div>
       </div>
-    </>
+    </UserProvider>
   );
 }

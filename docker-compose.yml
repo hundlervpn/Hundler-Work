@@ -1,10 +1,34 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: hundler-work-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=hundler
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=hundlerwork
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Applied only on first initialization of an empty data volume.
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hundler -d hundlerwork"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: hundler-work-app
     restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://hundler:${POSTGRES_PASSWORD}@db:5432/hundlerwork
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    depends_on:
+      db:
+        condition: service_healthy
     expose:
       - "3000"
 
@@ -31,3 +55,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  db_data:
