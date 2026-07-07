@@ -1,0 +1,160 @@
+import * as React from "react";
+
+type P = React.SVGProps<SVGSVGElement>;
+
+export const SearchIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx={11} cy={11} r={7} />
+    <path d="m21 21-4.3-4.3" />
+  </svg>
+);
+
+export const SlidersIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <line x1={4} y1={21} x2={4} y2={14} />
+    <line x1={4} y1={10} x2={4} y2={3} />
+    <line x1={12} y1={21} x2={12} y2={12} />
+    <line x1={12} y1={8} x2={12} y2={3} />
+    <line x1={20} y1={21} x2={20} y2={16} />
+    <line x1={20} y1={12} x2={20} y2={3} />
+    <line x1={1} y1={14} x2={7} y2={14} />
+    <line x1={9} y1={8} x2={15} y2={8} />
+    <line x1={17} y1={16} x2={23} y2={16} />
+  </svg>
+);
+
+export const GridIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x={3} y={3} width={7} height={7} rx={1.5} />
+    <rect x={14} y={3} width={7} height={7} rx={1.5} />
+    <rect x={3} y={14} width={7} height={7} rx={1.5} />
+    <rect x={14} y={14} width={7} height={7} rx={1.5} />
+  </svg>
+);
+
+export const ChevronDown = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+
+export const ChevronRight = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="m9 6 6 6-6 6" />
+  </svg>
+);
+
+export const ClockIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx={12} cy={12} r={9} />
+    <path d="M12 7v5l3 2" />
+  </svg>
+);
+
+export const EyeIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+    <circle cx={12} cy={12} r={3} />
+  </svg>
+);
+
+export const UsersIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx={9} cy={7} r={4} />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+
+export const HomeIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+    <path d="M9 21v-6h6v6" />
+  </svg>
+);
+
+export const ChatIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" />
+  </svg>
+);
+
+export const UserIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx={12} cy={8} r={4} />
+    <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" />
+  </svg>
+);
+
+export const MoreIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx={12} cy={5} r={1} />
+    <circle cx={12} cy={12} r={1} />
+    <circle cx={12} cy={19} r={1} />
+  </svg>
+);
+
+export const CloseIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M18 6 6 18M6 6l12 12" />
+  </svg>
+);
+
+export const TikTokIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
+    <path d="M16.5 3c.3 2.1 1.5 3.5 3.5 3.7v2.5c-1.2.1-2.4-.2-3.5-.8v5.9c0 3.2-2.4 5.7-5.6 5.7A5.5 5.5 0 0 1 5.4 14c0-3 2.4-5.4 5.6-5.4.3 0 .6 0 .9.1v2.7a2.9 2.9 0 0 0-1-.2 2.8 2.8 0 1 0 2.8 2.8V3h2.8Z" />
+  </svg>
+);
+
+export const CodeIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 4l-4 16" />
+  </svg>
+);
+
+export const DesignIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx={12} cy={12} r={9} />
+    <circle cx={12} cy={12} r={3} />
+    <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+  </svg>
+);
+
+export const TextIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M4 6h16M4 12h16M4 18h10" />
+  </svg>
+);
+
+export const VideoIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x={2} y={5} width={14} height={14} rx={2} />
+    <path d="m22 8-6 4 6 4V8Z" />
+  </svg>
+);
+
+export const CryptoIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx={12} cy={12} r={9} />
+    <path d="M9.5 8h4a2.5 2.5 0 0 1 0 5h-4Zm0 5h4.5a2.5 2.5 0 0 1 0 5H9.5Zm1.5-7v12" />
+  </svg>
+);

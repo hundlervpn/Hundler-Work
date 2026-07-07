@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --shadow-border: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-border-hover: 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: #050506;
+  color: #ffffff;
+  text-wrap: pretty;
+}
+
+/* Headings balance for short text */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Dynamic numbers (prices, counts) */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Staggered enter animation, CSS-only */
+.stagger > * {
+  opacity: 0;
+  animation: fadeInUp 420ms cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 40ms; }
+.stagger > *:nth-child(2) { animation-delay: 120ms; }
+.stagger > *:nth-child(3) { animation-delay: 200ms; }
+.stagger > *:nth-child(4) { animation-delay: 280ms; }
+.stagger > *:nth-child(5) { animation-delay: 360ms; }
+.stagger > *:nth-child(6) { animation-delay: 440ms; }
+.stagger > *:nth-child(7) { animation-delay: 520ms; }
+.stagger > *:nth-child(8) { animation-delay: 600ms; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger > * {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Press feedback */
+.press {
+  transition-property: scale, box-shadow, background-color, color;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+.press:active {
+  scale: 0.96;
+}
+
+/* Brand gradient text */
+.brand-gradient {
+  background-image: linear-gradient(90deg, #f43f5e 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Thin scrollbar hide for horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
