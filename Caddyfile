@@ -1,0 +1,10 @@
+hundlerwork.duckdns.org {
+	encode zstd gzip
+
+	# ACME certificate via DuckDNS DNS-01 challenge (no ports 80/443 needed to issue).
+	tls {
+		dns duckdns {env.DUCKDNS_TOKEN}
+	}
+
+	reverse_proxy app:3000
+}

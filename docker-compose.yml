@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hundler-work-app
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  caddy:
+    build:
+      context: .
+      dockerfile: caddy.Dockerfile
+    container_name: hundler-work-caddy
+    restart: unless-stopped
+    depends_on:
+      - app
+    # HTTPS_PORT defaults to 8443 so we DON'T fight the VPN node for 443.
+    # If `ss -tlnp` shows 443 is free, set HTTPS_PORT=443 in .env for a clean URL.
+    ports:
+      - "${HTTPS_PORT:-8443}:443"
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+Dockerfile
+caddy.Dockerfile
+docker-compose.yml
+Caddyfile
+.env
+.env.*
+*.md
+npm-debug.log*
+.DS_Store
