@@ -13,7 +13,7 @@ function initials(name: string) {
 export function Chats() {
   return (
     <div className="stagger flex flex-col gap-5">
-      <div className="lg:text-left text-center">
+      <div>
         <h1 className="text-3xl font-black tracking-tight text-white">Чаты</h1>
         <p className="mt-1 text-pretty text-sm text-ink-muted">
           Переписка с заказчиками и исполнителями

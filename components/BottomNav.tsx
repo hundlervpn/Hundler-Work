@@ -1,11 +1,12 @@
 "use client";
 import * as React from "react";
-import { HomeIcon, SearchIcon, ChatIcon, UserIcon } from "./icons";
+import { SearchIcon, UsersIcon, HomeIcon, ChatIcon, UserIcon } from "./icons";
 import type { TabKey } from "@/lib/nav";
 
 const ITEMS: { key: TabKey; label: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> }[] = [
-  { key: "find", label: "Заказы", Icon: SearchIcon },
-  { key: "orders", label: "Мои заказы", Icon: HomeIcon },
+  { key: "find", label: "Работа", Icon: SearchIcon },
+  { key: "responses", label: "Отклики", Icon: UsersIcon },
+  { key: "orders", label: "Заказы", Icon: HomeIcon },
   { key: "chats", label: "Чаты", Icon: ChatIcon },
   { key: "profile", label: "Профиль", Icon: UserIcon },
 ];
@@ -18,8 +19,11 @@ export function BottomNav({
   onChange: (k: TabKey) => void;
 }) {
   return (
-    <nav className="sticky bottom-0 z-20 border-t border-white/[0.06] bg-base/80 backdrop-blur-xl lg:hidden">
-      <div className="mx-auto flex max-w-md items-stretch justify-around px-2 py-2">
+    <nav className="sticky bottom-0 z-20 border-t border-white/[0.06] bg-base/85 backdrop-blur-xl lg:hidden">
+      <div
+        className="mx-auto flex max-w-md items-stretch justify-around px-1 py-2"
+        style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+      >
         {ITEMS.map(({ key, label, Icon }) => {
           const isActive = active === key;
           return (
@@ -34,7 +38,7 @@ export function BottomNav({
                 }`}
               />
               <span
-                className={`text-[11px] transition-colors duration-200 ${
+                className={`text-[10.5px] transition-colors duration-200 ${
                   isActive ? "text-white" : "text-ink-muted"
                 }`}
               >

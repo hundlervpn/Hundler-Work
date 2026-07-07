@@ -31,10 +31,14 @@ export function Sidebar({
 }) {
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-white/[0.06] bg-base-raised/50 px-4 py-6 lg:flex">
-      <div className="flex items-center gap-2 px-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-red to-brand-red-deep text-base font-black text-white shadow-brand-glow">
-          H
-        </div>
+      <div className="flex items-center gap-2.5 px-2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt="Hundler Work"
+          className="h-10 w-10 shrink-0 object-contain"
+          draggable={false}
+        />
         <div className="leading-tight">
           <div className="font-bold tracking-tight text-white">Hundler Work</div>
           <div className="text-[11px] text-ink-muted">биржа заказов</div>

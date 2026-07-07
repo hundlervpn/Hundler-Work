@@ -14,7 +14,7 @@ export function DesktopTabs({
   const show = TOP_TABS.some((t) => t.key === active);
   if (!show) return null;
   return (
-    <div className="mb-6 hidden lg:block">
+    <div className="mb-6 hidden lg:block" data-desktop-tabs>
       <div className="inline-flex items-center gap-1 rounded-2xl bg-base-card p-1.5 shadow-border">
         {TOP_TABS.map((t) => {
           const isActive = active === t.key;

@@ -9,7 +9,7 @@ export function OrderCard({ order }: { order: Order }) {
   const accentText =
     order.accent === "violet" ? "text-brand-violet-bright" : "text-brand-red-bright";
   return (
-    <article className="group h-full rounded-3xl bg-base-card p-2 shadow-border press hover:shadow-border-hover">
+    <article className="group h-full cursor-pointer rounded-3xl bg-base-card p-2 shadow-border press hover:shadow-border-hover">
       <div className="flex h-full flex-col rounded-[1.25rem] p-4">
         <div className="flex items-start gap-3">
           <OrderIcon icon={order.icon} accent={order.accent} />
@@ -33,12 +33,12 @@ export function OrderCard({ order }: { order: Order }) {
           ))}
         </div>
 
-        <div className="mt-4 flex items-center gap-4 border-t border-white/[0.06] pt-3 text-xs text-ink-muted">
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/[0.06] pt-3 text-xs text-ink-muted">
           <span className="inline-flex items-center gap-1.5">
             <ClockIcon className="h-3.5 w-3.5" />
             <span className="tnum">{order.days}</span> {pluralDays(order.days)}
           </span>
-          <span className="hidden items-center gap-1.5 min-[380px]:inline-flex">
+          <span className="inline-flex items-center gap-1.5">
             <EyeIcon className="h-3.5 w-3.5" />
             <span className="tnum">{order.views}</span> {pluralViews(order.views)}
           </span>
@@ -46,12 +46,12 @@ export function OrderCard({ order }: { order: Order }) {
             <UsersIcon className="h-3.5 w-3.5" />
             <span className="tnum">{order.responses}</span> откл.
           </span>
-          <button
-            aria-label="Открыть заказ"
-            className="press ml-auto grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-brand-red to-brand-red-deep text-white shadow-brand-glow transition-[scale,box-shadow] hover:shadow-border-hover"
+          <span
+            className={`ml-auto inline-flex items-center gap-1 font-medium ${accentText} transition-transform duration-200 group-hover:translate-x-0.5`}
           >
-            <ChevronRight className="h-4 w-4" />
-          </button>
+            Открыть
+            <ChevronRight className="h-3.5 w-3.5" />
+          </span>
         </div>
       </div>
     </article>

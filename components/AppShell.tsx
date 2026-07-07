@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
 import { Sidebar } from "./Sidebar";
-import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { DesktopTabs } from "./DesktopTabs";
+import { Splash } from "./Splash";
 import { FindWork } from "./tabs/FindWork";
 import { MyResponses } from "./tabs/MyResponses";
 import { MyOrders } from "./tabs/MyOrders";
@@ -30,25 +30,27 @@ export function AppShell() {
   }, [active]);
 
   return (
-    <div className="flex min-h-dvh bg-base">
-      <Sidebar active={active} onChange={setActive} />
+    <>
+      <Splash />
+      <div className="flex min-h-dvh bg-base">
+        <Sidebar active={active} onChange={setActive} />
 
-      <div className="flex min-h-dvh min-w-0 flex-1 flex-col">
-        <TopBar active={active} onChange={setActive} />
+        <div className="flex min-h-dvh min-w-0 flex-1 flex-col">
+          <main className="flex-1 overflow-y-auto">
+            {/* key on active → re-trigger stagger enter animation per tab */}
+            <div
+              key={active}
+              className="mx-auto w-full max-w-2xl px-4 pb-8 pt-6 sm:px-5 lg:max-w-6xl lg:px-10 lg:pt-10"
+              style={{ paddingTop: "max(1.5rem, env(safe-area-inset-top))" }}
+            >
+              <DesktopTabs active={active} onChange={setActive} />
+              {content}
+            </div>
+          </main>
 
-        <main className="flex-1 overflow-y-auto">
-          {/* key on active → re-trigger stagger enter animation per tab */}
-          <div
-            key={active}
-            className="mx-auto w-full max-w-md px-5 pb-8 pt-6 lg:max-w-6xl lg:px-10 lg:pt-10"
-          >
-            <DesktopTabs active={active} onChange={setActive} />
-            {content}
-          </div>
-        </main>
-
-        <BottomNav active={active} onChange={setActive} />
+          <BottomNav active={active} onChange={setActive} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
