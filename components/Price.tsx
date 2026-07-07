@@ -12,7 +12,7 @@ export function Price({
   return (
     <div className="shrink-0 text-right leading-none">
       <span
-        className={`tnum font-bold text-white ${size === "lg" ? "text-2xl" : "text-lg"}`}
+        className={`tnum font-bold text-ink ${size === "lg" ? "text-2xl" : "text-lg"}`}
       >
         {value}
       </span>

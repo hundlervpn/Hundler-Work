@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,17 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand palette — ONLY these: black / white / red / violet.
-        // Red is the dominant accent; violet is secondary/minor.
+        // Semantic tokens — driven by CSS variables so they flip with the theme.
         ink: {
-          DEFAULT: "#ffffff",
-          muted: "#a1a1aa",
+          DEFAULT: "var(--text)",
+          muted: "var(--text-muted)",
         },
-        base: {
-          DEFAULT: "#0a0a0b",
-          raised: "#141416",
-          card: "#161618",
+        base: "var(--bg)",
+        surface: "var(--surface)",
+        card: "var(--card)",
+        hair: "var(--hair)",
+        raise: {
+          DEFAULT: "var(--raise)",
+          hover: "var(--raise-hover)",
         },
+        // Brand palette — fixed in BOTH themes: red (dominant) + violet (minor).
         brand: {
           red: "#e11d48",
           "red-bright": "#f43f5e",
@@ -28,23 +32,13 @@ const config: Config = {
         },
       },
       boxShadow: {
-        border: "0 0 0 1px rgba(255,255,255,0.08)",
-        "border-hover": "0 0 0 1px rgba(255,255,255,0.14)",
+        border: "0 0 0 1px var(--border-shadow)",
+        "border-hover": "0 0 0 1px var(--border-shadow-hover)",
         "brand-glow":
-          "0 0 0 1px rgba(255,255,255,0.06), 0 8px 30px -8px rgba(225,29,72,0.55)",
-        "brand-ring": "0 0 0 1px rgba(225,29,72,0.35)",
+          "0 0 0 1px var(--border-shadow), 0 8px 30px -8px rgba(225,29,72,0.55)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-      },
-      keyframes: {
-        fadeInUp: {
-          "0%": { opacity: "0", transform: "translateY(12px)", filter: "blur(4px)" },
-          "100%": { opacity: "1", transform: "translateY(0)", filter: "blur(0)" },
-        },
-      },
-      animation: {
-        fadeInUp: "fadeInUp 420ms cubic-bezier(0.2,0,0,1) forwards",
       },
     },
   },

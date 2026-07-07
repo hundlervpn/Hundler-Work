@@ -9,10 +9,40 @@ import { MyResponses } from "./tabs/MyResponses";
 import { MyOrders } from "./tabs/MyOrders";
 import { Chats } from "./tabs/Chats";
 import { Profile } from "./tabs/Profile";
-import type { TabKey } from "@/lib/nav";
+import type { TabKey, ThemeMode, Role } from "@/lib/nav";
 
 export function AppShell() {
   const [active, setActive] = React.useState<TabKey>("find");
+  const [theme, setTheme] = React.useState<ThemeMode>("dark");
+  const [role, setRole] = React.useState<Role>("freelancer");
+
+  // Load persisted preferences on mount.
+  React.useEffect(() => {
+    try {
+      const t = localStorage.getItem("hw-theme");
+      if (t === "light" || t === "dark") setTheme(t);
+      const r = localStorage.getItem("hw-role");
+      if (r === "client" || r === "freelancer") setRole(r);
+    } catch {}
+  }, []);
+
+  // Apply + persist theme.
+  React.useEffect(() => {
+    const el = document.documentElement;
+    el.classList.toggle("light", theme === "light");
+    try {
+      localStorage.setItem("hw-theme", theme);
+    } catch {}
+  }, [theme]);
+
+  // Persist role.
+  React.useEffect(() => {
+    try {
+      localStorage.setItem("hw-role", role);
+    } catch {}
+  }, [role]);
+
+  const roleLabel = role === "client" ? "Заказчик" : "Исполнитель";
 
   const content = React.useMemo(() => {
     switch (active) {
@@ -25,15 +55,22 @@ export function AppShell() {
       case "chats":
         return <Chats />;
       case "profile":
-        return <Profile />;
+        return (
+          <Profile
+            theme={theme}
+            setTheme={setTheme}
+            role={role}
+            setRole={setRole}
+          />
+        );
     }
-  }, [active]);
+  }, [active, theme, role]);
 
   return (
     <>
       <Splash />
       <div className="flex min-h-dvh bg-base">
-        <Sidebar active={active} onChange={setActive} />
+        <Sidebar active={active} onChange={setActive} roleLabel={roleLabel} />
 
         <div className="flex min-h-dvh min-w-0 flex-1 flex-col">
           <main className="flex-1 overflow-y-auto">

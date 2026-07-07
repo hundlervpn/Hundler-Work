@@ -9,7 +9,7 @@ export function Splash() {
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hold = reduce ? 400 : 1500;
+    const hold = reduce ? 400 : 1600;
     const t1 = setTimeout(() => setLeaving(true), hold);
     const t2 = setTimeout(() => setGone(true), hold + 550);
     return () => {
@@ -28,13 +28,13 @@ export function Splash() {
       }`}
     >
       <div className="relative grid place-items-center">
-        <div className="splash-glow absolute h-64 w-64 sm:h-80 sm:w-80" />
+        <div className="splash-glow absolute h-[22rem] w-[22rem] sm:h-[30rem] sm:w-[30rem]" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo.png"
           alt="Hundler Work"
           draggable={false}
-          className={`relative h-40 w-40 select-none object-contain sm:h-56 sm:w-56 ${
+          className={`relative h-64 w-64 max-w-[72vw] select-none object-contain sm:h-80 sm:w-80 ${
             leaving ? "splash-logo-out" : "splash-logo-in"
           }`}
         />

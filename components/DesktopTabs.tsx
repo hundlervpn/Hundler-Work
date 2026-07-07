@@ -14,8 +14,8 @@ export function DesktopTabs({
   const show = TOP_TABS.some((t) => t.key === active);
   if (!show) return null;
   return (
-    <div className="mb-6 hidden lg:block" data-desktop-tabs>
-      <div className="inline-flex items-center gap-1 rounded-2xl bg-base-card p-1.5 shadow-border">
+    <div className="mb-6 hidden lg:block">
+      <div className="inline-flex items-center gap-1 rounded-2xl bg-card p-1.5 shadow-border">
         {TOP_TABS.map((t) => {
           const isActive = active === t.key;
           return (
@@ -25,7 +25,7 @@ export function DesktopTabs({
               className={`press rounded-xl px-4 py-2 text-sm font-medium ${
                 isActive
                   ? "bg-gradient-to-br from-brand-red to-brand-red-deep text-white shadow-brand-glow"
-                  : "text-ink-muted hover:text-white"
+                  : "text-ink-muted hover:text-ink"
               }`}
             >
               {t.label}

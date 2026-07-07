@@ -10,10 +10,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050506",
   width: "device-width",
   initialScale: 1,
 };
+
+// Applies the saved theme class before paint to avoid a flash of the wrong theme.
+const themeInit = `try{var t=localStorage.getItem('hw-theme');if(t==='light'){document.documentElement.classList.add('light');}}catch(e){}`;
 
 export default function RootLayout({
   children,
@@ -21,7 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={`antialiased ${inter.variable}`}>
+    <html lang="ru" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+      </head>
       <body className="font-sans">{children}</body>
     </html>
   );

@@ -13,3 +13,6 @@ export const TOP_TABS: { key: TabKey; label: string }[] = [
   { key: "responses", label: "Мои отклики" },
   { key: "orders", label: "Мои заказы" },
 ];
+
+export type ThemeMode = "dark" | "light";
+export type Role = "freelancer" | "client";

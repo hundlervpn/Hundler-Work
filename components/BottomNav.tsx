@@ -19,7 +19,7 @@ export function BottomNav({
   onChange: (k: TabKey) => void;
 }) {
   return (
-    <nav className="sticky bottom-0 z-20 border-t border-white/[0.06] bg-base/85 backdrop-blur-xl lg:hidden">
+    <nav className="sticky bottom-0 z-20 border-t border-hair bg-base backdrop-blur-xl lg:hidden">
       <div
         className="mx-auto flex max-w-md items-stretch justify-around px-1 py-2"
         style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
@@ -39,7 +39,7 @@ export function BottomNav({
               />
               <span
                 className={`text-[10.5px] transition-colors duration-200 ${
-                  isActive ? "text-white" : "text-ink-muted"
+                  isActive ? "text-ink" : "text-ink-muted"
                 }`}
               >
                 {label}

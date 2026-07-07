@@ -115,7 +115,7 @@ export const RESPONSE_STATUS: Record<
 > = {
   pending: { label: "На рассмотрении", className: "text-brand-violet-bright bg-brand-violet/15" },
   accepted: { label: "Принят", className: "text-brand-red-bright bg-brand-red/15" },
-  rejected: { label: "Отклонён", className: "text-ink-muted bg-white/[0.05]" },
+  rejected: { label: "Отклонён", className: "text-ink-muted bg-raise" },
 };
 
 export type MyResponse = {
@@ -171,7 +171,7 @@ export const ORDER_STATUS: Record<
 > = {
   active: { label: "Активен", className: "text-brand-red-bright bg-brand-red/15" },
   in_progress: { label: "В работе", className: "text-brand-violet-bright bg-brand-violet/15" },
-  done: { label: "Завершён", className: "text-ink-muted bg-white/[0.05]" },
+  done: { label: "Завершён", className: "text-ink-muted bg-raise" },
 };
 
 export type MyOrder = {
@@ -282,4 +282,35 @@ export const PROFILE = {
   activeOrders: 3,
   activeResponses: 2,
   done: 27,
+};
+
+/* ---- Сообщения в чатах ---- */
+export type Message = {
+  id: string;
+  text: string;
+  mine: boolean;
+  time: string;
+};
+
+export const MESSAGES: Record<string, Message[]> = {
+  c1: [
+    { id: "m1", text: "Привет! Видел ваш заказ на AI-автоответчик, интересно.", mine: false, time: "12:30" },
+    { id: "m2", text: "Привет! Да, актуально. Есть опыт с VK API?", mine: true, time: "12:33" },
+    { id: "m3", text: "Да, делал пару ботов на callback API + long poll.", mine: false, time: "12:36" },
+    { id: "m4", text: "Отлично. Сроки и бюджет примерно как в заказе?", mine: true, time: "12:38" },
+    { id: "m5", text: "Готов взять заказ, когда стартуем?", mine: false, time: "12:40" },
+  ],
+  c2: [
+    { id: "m1", text: "Отправила ТЗ, посмотрите пожалуйста", mine: false, time: "11:05" },
+    { id: "m2", text: "Спасибо, гляну в течение часа 👌", mine: true, time: "11:07" },
+  ],
+  c3: [
+    { id: "m1", text: "Залил первую версию на стейдж", mine: false, time: "Вчера" },
+    { id: "m2", text: "Супер, скинь ссылку на превью", mine: true, time: "Вчера" },
+    { id: "m3", text: "https://stage.hundler.work", mine: false, time: "Вчера" },
+  ],
+  c4: [
+    { id: "m1", text: "Спасибо за отзыв! 🙌", mine: false, time: "Пн" },
+    { id: "m2", text: "Заслуженно, работа топ 🔥", mine: true, time: "Пн" },
+  ],
 };

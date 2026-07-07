@@ -11,12 +11,12 @@ export function CategorySelect() {
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="press flex w-full items-center gap-3 rounded-2xl bg-base-card px-4 py-3.5 shadow-border hover:shadow-border-hover"
+        className="press flex w-full items-center gap-3 rounded-2xl bg-card px-4 py-3.5 shadow-border hover:shadow-border-hover"
       >
         <span className="grid h-6 w-6 place-items-center text-brand-red-bright">
           <GridIcon className="h-5 w-5" />
         </span>
-        <span className="flex-1 text-left text-[15px] font-medium text-white">
+        <span className="flex-1 text-left text-[15px] font-medium text-ink">
           {selected}
         </span>
         <ChevronDown
@@ -27,7 +27,7 @@ export function CategorySelect() {
       </button>
 
       {open && (
-        <div className="stagger absolute inset-x-0 top-full z-10 mt-2 overflow-hidden rounded-2xl bg-base-card p-2 shadow-border-hover">
+        <div className="stagger absolute inset-x-0 top-full z-10 mt-2 overflow-hidden rounded-2xl bg-card p-2 shadow-border-hover">
           {CATEGORIES.map((c) => {
             const isSel = c === selected;
             return (
@@ -39,8 +39,8 @@ export function CategorySelect() {
                 }}
                 className={`press flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
                   isSel
-                    ? "bg-gradient-to-r from-brand-red/25 to-brand-violet/10 text-white"
-                    : "text-ink-muted hover:text-white"
+                    ? "bg-gradient-to-r from-brand-red/25 to-brand-violet/10 text-ink"
+                    : "text-ink-muted hover:text-ink"
                 }`}
               >
                 {c}

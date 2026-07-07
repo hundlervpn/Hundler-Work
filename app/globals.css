@@ -2,9 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---- Theme tokens ---- */
+/* Default (no class) === dark, so the app is dark even before JS runs. */
 :root {
-  --shadow-border: 0 0 0 1px rgba(255, 255, 255, 0.08);
-  --shadow-border-hover: 0 0 0 1px rgba(255, 255, 255, 0.14);
+  color-scheme: dark;
+  --bg: #050506;
+  --surface: #141416;
+  --card: #161618;
+  --text: #ffffff;
+  --text-muted: #a1a1aa;
+  --hair: rgba(255, 255, 255, 0.07);
+  --raise: rgba(255, 255, 255, 0.04);
+  --raise-hover: rgba(255, 255, 255, 0.08);
+  --border-shadow: rgba(255, 255, 255, 0.08);
+  --border-shadow-hover: rgba(255, 255, 255, 0.14);
+}
+
+html.light {
+  color-scheme: light;
+  --bg: #f3f3f6;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --text: #0b0b0d;
+  --text-muted: #5c5c67;
+  --hair: rgba(0, 0, 0, 0.09);
+  --raise: rgba(0, 0, 0, 0.035);
+  --raise-hover: rgba(0, 0, 0, 0.06);
+  --border-shadow: rgba(0, 0, 0, 0.10);
+  --border-shadow-hover: rgba(0, 0, 0, 0.17);
 }
 
 html {
@@ -13,9 +38,10 @@ html {
 }
 
 body {
-  background: #050506;
-  color: #ffffff;
+  background: var(--bg);
+  color: var(--text);
   text-wrap: pretty;
+  transition: background-color 300ms ease, color 300ms ease;
 }
 
 h1, h2, h3 {

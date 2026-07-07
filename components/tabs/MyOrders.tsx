@@ -11,7 +11,7 @@ export function MyOrders() {
     <div className="stagger flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-white">Мои заказы</h1>
+          <h1 className="text-3xl font-black tracking-tight text-ink">Мои заказы</h1>
           <p className="mt-1 text-pretty text-sm text-ink-muted">
             Задания, которые вы разместили
           </p>
@@ -30,20 +30,20 @@ export function MyOrders() {
           return (
             <article
               key={o.id}
-              className="group cursor-pointer rounded-3xl bg-base-card p-2 shadow-border press hover:shadow-border-hover"
+              className="group cursor-pointer rounded-3xl bg-card p-2 shadow-border press hover:shadow-border-hover"
             >
               <div className="rounded-[1.25rem] p-4">
                 <div className="flex items-start gap-3">
                   <OrderIcon icon={o.icon} accent={o.accent} />
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-[16px] font-semibold leading-tight text-white">
+                    <h3 className="truncate text-[16px] font-semibold leading-tight text-ink">
                       {o.title}
                     </h3>
                     <p className="mt-1 text-xs text-ink-muted">Создан {o.createdAt}</p>
                   </div>
                   <Price value={o.price} currency={o.currency} size="md" />
                 </div>
-                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-white/[0.06] pt-3">
+                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-hair pt-3">
                   <StatusBadge label={st.label} className={st.className} />
                   <span className="inline-flex items-center gap-1.5 text-xs text-ink-muted">
                     <UsersIcon className="h-3.5 w-3.5" />
