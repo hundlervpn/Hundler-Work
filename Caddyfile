@@ -1,7 +1,8 @@
 hundlerwork.duckdns.org {
 	encode zstd gzip
 
-	# ACME certificate via DuckDNS DNS-01 challenge (no ports 80/443 needed to issue).
+	# ACME certificate via DuckDNS DNS-01 challenge — robust for DuckDNS domains
+	# and does not depend on inbound port 80 reachability.
 	tls {
 		dns duckdns {env.DUCKDNS_TOKEN}
 	}

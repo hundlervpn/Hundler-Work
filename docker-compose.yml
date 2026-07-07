@@ -16,10 +16,11 @@ services:
     restart: unless-stopped
     depends_on:
       - app
-    # HTTPS_PORT defaults to 8443 so we DON'T fight the VPN node for 443.
-    # If `ss -tlnp` shows 443 is free, set HTTPS_PORT=443 in .env for a clean URL.
+    # Server is dedicated to Hundler Work now, so we take the standard web ports.
+    # 80 handles the HTTP->HTTPS redirect; 443 serves the app.
     ports:
-      - "${HTTPS_PORT:-8443}:443"
+      - "80:80"
+      - "443:443"
     environment:
       - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
     volumes:

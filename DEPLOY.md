@@ -1,22 +1,10 @@
 # Deploying Hundler Work
 
-Target server: **38.244.142.43** — ⚠️ this box also runs the **live Hundler VPN NL node**
-(`/opt/remnanode`, Docker `remnawave/node`). Do **NOT** wipe the server. Deploy Hundler Work
-into its own directory and leave everything else alone.
+Target server: **38.244.142.43** — this box is now **dedicated to Hundler Work**. The old
+Hundler VPN NL node that used to run here has been decommissioned, so the server can be wiped
+and repurposed.
 
-## 0. Safety first — check what holds the web ports
-
-```bash
-sudo ss -tlnp | grep -E ':80 |:443 '
-docker ps
-```
-
-The VPN node most likely holds **443**. That's fine — we issue the TLS certificate over the
-**DuckDNS DNS-01 challenge**, so port 443/80 do **not** need to be free to get HTTPS. We only
-need a free port to *serve* on. By default we serve on **8443** (`HTTPS_PORT`), which does not
-collide with the VPN node. If `ss` shows 443 is free, you may set `HTTPS_PORT=443`.
-
-## 1. Point the domain at this server
+## 0. Point the domain at this server
 
 On https://www.duckdns.org set the `hundlerwork` domain's **current ip** to `38.244.142.43`
 and press **update ip**. Verify:
@@ -25,7 +13,33 @@ and press **update ip**. Verify:
 nslookup hundlerwork.duckdns.org   # -> 38.244.142.43
 ```
 
-## 2. Clone into a dedicated directory (does NOT touch the VPN)
+## 1. Wipe the old stuff off the server
+
+First see what's running so you know what you're removing:
+
+```bash
+docker ps -a
+ls /opt
+```
+
+Tear down the old VPN node's docker stack (if it's still up) and remove its directory:
+
+```bash
+# stop + remove the old node stack (ignore errors if already gone)
+cd /opt/remnanode 2>/dev/null && docker compose down -v || true
+cd ~
+
+# nuke ALL docker containers/images/volumes/networks left on the box
+docker ps -aq | xargs -r docker rm -f
+docker system prune -a --volumes -f
+
+# remove leftover app directories
+sudo rm -rf /opt/remnanode
+```
+
+> This clears Docker and the old node directory. It does **not** touch the OS itself.
+
+## 2. Clone Hundler Work
 
 ```bash
 sudo mkdir -p /opt/hundler-work
@@ -38,8 +52,10 @@ cd /opt/hundler-work
 
 ```bash
 cp .env.example .env
-nano .env          # paste your DUCKDNS_TOKEN; set HTTPS_PORT (8443 default)
+nano .env          # paste your DUCKDNS_TOKEN
 ```
+
+Your DuckDNS token is the string at the top of your https://www.duckdns.org account page.
 
 ## 4. Build & run
 
@@ -48,8 +64,7 @@ docker compose up -d --build
 docker compose logs -f caddy   # watch for successful certificate issuance
 ```
 
-The site will be available at **https://hundlerwork.duckdns.org:8443**
-(or without the port if you set `HTTPS_PORT=443`).
+The site will be live at **https://hundlerwork.duckdns.org** (HTTP is auto-redirected to HTTPS).
 
 ## Updating later
 
@@ -59,7 +74,7 @@ git pull
 docker compose up -d --build
 ```
 
-## Tearing down ONLY this app (never the VPN)
+## Stopping
 
 ```bash
 cd /opt/hundler-work
