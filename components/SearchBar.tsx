@@ -17,7 +17,7 @@ export function SearchBar() {
       </label>
       <button
         aria-label="Фильтры"
-        className="press grid h-[46px] w-[46px] shrink-0 place-items-center rounded-2xl bg-base-card text-brand-violet-bright shadow-border hover:shadow-border-hover"
+        className="press grid h-[46px] w-[46px] shrink-0 place-items-center rounded-2xl bg-base-card text-brand-red-bright shadow-border hover:shadow-border-hover"
       >
         <SlidersIcon className="h-5 w-5" />
       </button>

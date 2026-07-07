@@ -5,7 +5,7 @@ import { CATEGORIES } from "@/lib/data";
 
 export function CategorySelect() {
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState(CATEGORIES[0]);
+  const [selected, setSelected] = React.useState<string>(CATEGORIES[0]);
 
   return (
     <div className="relative">
@@ -39,7 +39,7 @@ export function CategorySelect() {
                 }}
                 className={`press flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
                   isSel
-                    ? "bg-gradient-to-r from-brand-red/20 to-brand-violet/20 text-white"
+                    ? "bg-gradient-to-r from-brand-red/25 to-brand-violet/10 text-white"
                     : "text-ink-muted hover:text-white"
                 }`}
               >

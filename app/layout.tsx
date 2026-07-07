@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "WorkHub — биржа заказов",
+  title: "Hundler Work — биржа заказов",
   description: "Площадка для заказчиков и исполнителей",
 };
 
@@ -13,7 +13,6 @@ export const viewport: Viewport = {
   themeColor: "#050506",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({

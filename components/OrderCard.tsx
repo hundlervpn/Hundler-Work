@@ -1,30 +1,16 @@
 import * as React from "react";
 import type { Order } from "@/lib/data";
 import { OrderIcon } from "./OrderIcon";
+import { Price } from "./Price";
 import { ClockIcon, EyeIcon, UsersIcon, ChevronRight } from "./icons";
-
-function pluralDays(n: number) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return "день";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "дня";
-  return "дней";
-}
-
-function pluralViews(n: number) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return "просмотр";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "просмотра";
-  return "просмотров";
-}
+import { pluralDays, pluralViews } from "@/lib/plural";
 
 export function OrderCard({ order }: { order: Order }) {
   const accentText =
-    order.accent === "red" ? "text-brand-red-bright" : "text-brand-violet-bright";
+    order.accent === "violet" ? "text-brand-violet-bright" : "text-brand-red-bright";
   return (
-    <article className="group rounded-3xl bg-base-card p-2 shadow-border press hover:shadow-border-hover">
-      <div className="rounded-[1.25rem] p-4">
+    <article className="group h-full rounded-3xl bg-base-card p-2 shadow-border press hover:shadow-border-hover">
+      <div className="flex h-full flex-col rounded-[1.25rem] p-4">
         <div className="flex items-start gap-3">
           <OrderIcon icon={order.icon} accent={order.accent} />
           <div className="min-w-0 flex-1">
@@ -33,12 +19,7 @@ export function OrderCard({ order }: { order: Order }) {
             </h3>
             <p className="mt-0.5 truncate text-sm text-ink-muted">{order.subtitle}</p>
           </div>
-          <div className="shrink-0 text-right leading-none">
-            <span className="tnum text-2xl font-bold text-white">{order.price}</span>
-            <span className="ml-0.5 align-top text-[11px] font-semibold text-ink-muted">
-              {order.currency}
-            </span>
-          </div>
+          <Price value={order.price} currency={order.currency} />
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
@@ -57,7 +38,7 @@ export function OrderCard({ order }: { order: Order }) {
             <ClockIcon className="h-3.5 w-3.5" />
             <span className="tnum">{order.days}</span> {pluralDays(order.days)}
           </span>
-          <span className="inline-flex items-center gap-1.5">
+          <span className="hidden items-center gap-1.5 min-[380px]:inline-flex">
             <EyeIcon className="h-3.5 w-3.5" />
             <span className="tnum">{order.views}</span> {pluralViews(order.views)}
           </span>
@@ -67,7 +48,7 @@ export function OrderCard({ order }: { order: Order }) {
           </span>
           <button
             aria-label="Открыть заказ"
-            className="press ml-auto grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-brand-red to-brand-violet text-white shadow-brand-glow transition-[scale,box-shadow] hover:shadow-border-hover"
+            className="press ml-auto grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-brand-red to-brand-red-deep text-white shadow-brand-glow transition-[scale,box-shadow] hover:shadow-border-hover"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
