@@ -1,56 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { getPool, ensureSchema } from "@/lib/db";
+import { parseAndValidate } from "@/lib/telegram";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-type TgUser = {
-  id: number;
-  first_name?: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-};
-
-// Validates Telegram WebApp initData per the official algorithm:
-// secret = HMAC_SHA256(bot_token, key="WebAppData"); hash = HMAC_SHA256(data_check_string, secret).
-function parseAndValidate(initData: string, botToken: string): TgUser | null {
-  if (!initData) return null;
-  const params = new URLSearchParams(initData);
-  const hash = params.get("hash");
-  if (!hash) return null;
-  params.delete("hash");
-
-  const pairs: string[] = [];
-  params.forEach((v, k) => {
-    pairs.push(`${k}=${v}`);
-  });
-  const dataCheckString = pairs.sort().join("\n");
-
-  const secretKey = crypto
-    .createHmac("sha256", "WebAppData")
-    .update(botToken)
-    .digest();
-  const computed = crypto
-    .createHmac("sha256", secretKey)
-    .update(dataCheckString)
-    .digest("hex");
-
-  if (computed !== hash) return null;
-
-  // Reject data older than 24h.
-  const authDate = Number(params.get("auth_date") || 0);
-  if (authDate && Date.now() / 1000 - authDate > 86400) return null;
-
-  const userRaw = params.get("user");
-  if (!userRaw) return null;
-  try {
-    return JSON.parse(userRaw) as TgUser;
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(req: NextRequest) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -97,6 +50,15 @@ export async function POST(req: NextRequest) {
   );
 
   const u = rows[0];
+
+  // Freelancer questionnaire (may not exist yet).
+  const { rows: profRows } = await pool.query(
+    `SELECT headline, about, skills, hourly_rate, currency, portfolio_url
+       FROM freelancer_profiles WHERE telegram_id = $1`,
+    [tg.id]
+  );
+  const prof = profRows[0];
+
   return NextResponse.json({
     user: {
       telegramId: Number(u.telegram_id),
@@ -107,6 +69,16 @@ export async function POST(req: NextRequest) {
       freelancerId: u.freelancer_id,
       clientId: u.client_id,
       balance: Number(u.balance ?? 0),
+      profile: prof
+        ? {
+            headline: prof.headline ?? "",
+            about: prof.about ?? "",
+            skills: prof.skills ?? "",
+            hourlyRate: prof.hourly_rate != null ? Number(prof.hourly_rate) : null,
+            currency: prof.currency ?? "USDT",
+            portfolioUrl: prof.portfolio_url ?? "",
+          }
+        : null,
     },
   });
 }

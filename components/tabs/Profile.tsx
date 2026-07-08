@@ -12,9 +12,16 @@ import {
   UserIcon,
   BriefcaseIcon,
   GiftIcon,
+  EditIcon,
+  UploadIcon,
+  HistoryIcon,
+  PlusIcon,
+  UsersIcon,
+  CopyIcon,
 } from "../icons";
 import type { ThemeMode, Role } from "@/lib/nav";
 import { useUser } from "../UserProvider";
+import type { FreelancerProfile } from "../UserProvider";
 
 function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
@@ -61,6 +68,159 @@ function IdBadge({
         {copied ? "Скопировано ✓" : value}
       </span>
     </button>
+  );
+}
+
+function RefStat({
+  Icon,
+  label,
+  value,
+}: {
+  Icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl bg-raise p-3 shadow-border">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-card text-brand-red-bright shadow-border">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="flex-1 text-sm text-ink-muted">{label}</span>
+      <span className="text-sm font-bold text-ink">{value}</span>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-ink-muted">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+const inputCls =
+  "w-full rounded-2xl bg-raise px-4 py-3 text-sm text-ink shadow-border outline-none placeholder:text-ink-muted/60 focus:ring-2 focus:ring-brand-red/40";
+
+function SurveyScreen({
+  initData,
+  initial,
+  onSaved,
+  onBack,
+}: {
+  initData: string;
+  initial: FreelancerProfile | null;
+  onSaved: (p: FreelancerProfile) => void;
+  onBack: () => void;
+}) {
+  const [headline, setHeadline] = React.useState(initial?.headline ?? "");
+  const [about, setAbout] = React.useState(initial?.about ?? "");
+  const [skills, setSkills] = React.useState(initial?.skills ?? "");
+  const [rate, setRate] = React.useState(
+    initial?.hourlyRate != null ? String(initial.hourlyRate) : ""
+  );
+  const [portfolio, setPortfolio] = React.useState(initial?.portfolioUrl ?? "");
+  const [saving, setSaving] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    const profile: FreelancerProfile = {
+      headline: headline.trim(),
+      about: about.trim(),
+      skills: skills.trim(),
+      hourlyRate: rate.trim() === "" ? null : Number(rate),
+      currency: "USDT",
+      portfolioUrl: portfolio.trim(),
+    };
+    try {
+      const r = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initData, profile }),
+      });
+      if (!r.ok) throw new Error("save failed");
+      const d = await r.json();
+      onSaved((d?.profile as FreelancerProfile) ?? profile);
+    } catch {
+      // Outside Telegram (no valid initData) we still keep the values locally.
+      setError(
+        "Не удалось сохранить на сервере. Проверьте, что приложение открыто внутри Telegram."
+      );
+      onSaved(profile);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <SubScreen title="Анкета исполнителя" onBack={onBack}>
+      <div className="flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-border">
+        <Field label="Специализация">
+          <input
+            className={inputCls}
+            value={headline}
+            onChange={(e) => setHeadline(e.target.value)}
+            placeholder="Напр. Веб-разработчик, дизайнер, копирайтер"
+          />
+        </Field>
+        <Field label="О себе">
+          <textarea
+            className={`${inputCls} min-h-[96px] resize-y`}
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+            placeholder="Коротко о вашем опыте и подходе к работе"
+          />
+        </Field>
+        <Field label="Навыки">
+          <input
+            className={inputCls}
+            value={skills}
+            onChange={(e) => setSkills(e.target.value)}
+            placeholder="Через запятую: React, Figma, SMM…"
+          />
+        </Field>
+        <Field label="Ставка (USDT)">
+          <input
+            className={inputCls}
+            value={rate}
+            onChange={(e) => setRate(e.target.value.replace(/[^\d.]/g, ""))}
+            inputMode="decimal"
+            placeholder="Напр. 25"
+          />
+        </Field>
+        <Field label="Ссылка на портфолио">
+          <input
+            className={inputCls}
+            value={portfolio}
+            onChange={(e) => setPortfolio(e.target.value)}
+            placeholder="https://…"
+          />
+        </Field>
+
+        {error ? (
+          <div className="rounded-2xl bg-brand-red/10 px-4 py-3 text-xs text-brand-red-bright">
+            {error}
+          </div>
+        ) : null}
+
+        <button
+          onClick={save}
+          disabled={saving}
+          className="press inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3.5 text-sm font-semibold text-white shadow-brand-glow disabled:opacity-60"
+        >
+          {saving ? "Сохранение…" : "Сохранить анкету"}
+        </button>
+      </div>
+    </SubScreen>
   );
 }
 
@@ -157,11 +317,26 @@ export function Profile({
 }) {
   const p = PROFILE;
   const { user } = useUser();
-  const [screen, setScreen] = React.useState<"main" | "settings" | "referral">(
-    "main"
-  );
+  const [screen, setScreen] = React.useState<
+    "main" | "settings" | "referral" | "survey"
+  >("main");
+  const { initData, setProfile } = useUser();
   const roleLabel = role === "client" ? "Заказчик" : "Исполнитель";
   const balance = user?.balance ?? p.balance;
+
+  if (screen === "survey") {
+    return (
+      <SurveyScreen
+        initData={initData}
+        initial={user?.profile ?? null}
+        onSaved={(prof) => {
+          setProfile(prof);
+          setScreen("main");
+        }}
+        onBack={() => setScreen("main")}
+      />
+    );
+  }
 
   if (screen === "settings") {
     return (
@@ -192,23 +367,61 @@ export function Profile({
       <SubScreen title="Реферальная система" onBack={() => setScreen("main")}>
         <div className="rounded-3xl bg-card p-2 shadow-border">
           <div className="rounded-[1.25rem] bg-gradient-to-br from-brand-red/20 via-transparent to-brand-violet/10 p-5">
-            <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-red/15 text-brand-red-bright shadow-border">
-                <GiftIcon className="h-6 w-6" />
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="grid h-20 w-20 place-items-center rounded-3xl bg-brand-red/15 text-brand-red-bright shadow-border">
+                <GiftIcon className="h-10 w-10" />
               </div>
               <div>
-                <div className="font-semibold text-ink">Приглашайте друзей</div>
-                <div className="text-xs text-ink-muted">
-                  Делитесь ссылкой и получайте бонусы
+                <div className="text-lg font-bold text-ink">
+                  Приглашай и зарабатывай
+                </div>
+                <div className="mt-1 text-xs text-ink-muted">
+                  Делитесь ссылкой и получайте процент с дохода приглашённых
                 </div>
               </div>
             </div>
-            <div className="mt-4 rounded-2xl bg-raise p-3 shadow-border">
-              <div className="text-[11px] text-ink-muted">Ваша ссылка</div>
-              <div className="mt-0.5 w-full truncate font-mono text-xs text-ink">
+
+            <div className="mt-5 flex flex-col gap-2">
+              <RefStat
+                Icon={UsersIcon}
+                label="Приглашено"
+                value={<span className="tnum">0</span>}
+              />
+              <RefStat
+                Icon={WalletIcon}
+                label="Доход с рефералов"
+                value={
+                  <span className="tnum">
+                    0<span className="ml-1 text-xs text-ink-muted">{p.currency}</span>
+                  </span>
+                }
+              />
+              <RefStat
+                Icon={GiftIcon}
+                label="Уровень дохода"
+                value={<span className="tnum">25%</span>}
+              />
+            </div>
+
+            <div className="mt-4 flex items-center gap-2 rounded-2xl bg-raise p-3 shadow-border">
+              <div className="min-w-0 flex-1 truncate font-mono text-xs text-ink">
                 {refLink}
               </div>
+              <button
+                onClick={() => {
+                  try {
+                    navigator.clipboard?.writeText(refLink);
+                  } catch {
+                    // ignore
+                  }
+                }}
+                aria-label="Скопировать"
+                className="press grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-card text-ink-muted shadow-border hover:text-ink"
+              >
+                <CopyIcon className="h-4 w-4" />
+              </button>
             </div>
+
             <button
               onClick={() => {
                 try {
@@ -217,9 +430,10 @@ export function Profile({
                   // ignore
                 }
               }}
-              className="press mt-3 w-full rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3 text-sm font-semibold text-white shadow-brand-glow"
+              className="press mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3.5 text-sm font-semibold text-white shadow-brand-glow"
             >
-              Скопировать ссылку
+              <UsersIcon className="h-4 w-4" />
+              Пригласить
             </button>
           </div>
         </div>
@@ -308,20 +522,44 @@ export function Profile({
       </div>
 
       {/* Balance */}
-      <div className="flex items-center gap-3 rounded-3xl bg-card p-5 shadow-border">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-red/15 text-brand-red-bright shadow-border">
-          <WalletIcon className="h-6 w-6" />
-        </div>
-        <div>
-          <div className="text-xs text-ink-muted">Баланс</div>
-          <div className="tnum text-2xl font-bold text-ink">
-            {balance}
-            <span className="ml-1 text-sm font-semibold text-ink-muted">{p.currency}</span>
+      <div className="rounded-3xl bg-card p-2 shadow-border">
+        <div className="rounded-[1.25rem] bg-gradient-to-br from-brand-red/12 via-transparent to-brand-violet/10 p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-red/15 text-brand-red-bright shadow-border">
+                <WalletIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="font-semibold text-ink">Баланс</div>
+                <button className="press inline-flex items-center gap-1 text-xs font-medium text-brand-red-bright">
+                  <HistoryIcon className="h-3.5 w-3.5" />
+                  История
+                </button>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="tnum text-2xl font-bold text-ink">
+                {balance}
+                <span className="ml-1 text-sm font-semibold text-ink-muted">
+                  {p.currency}
+                </span>
+              </div>
+              <div className="tnum text-[11px] text-ink-muted">
+                В обработке: 0 {p.currency}
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <button className="press inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3 text-sm font-semibold text-white shadow-brand-glow">
+              <PlusIcon className="h-4 w-4" />
+              Пополнить
+            </button>
+            <button className="press inline-flex items-center justify-center gap-2 rounded-2xl bg-raise px-4 py-3 text-sm font-semibold text-ink shadow-border hover:text-brand-red-bright">
+              <UploadIcon className="h-4 w-4" />
+              Вывести
+            </button>
           </div>
         </div>
-        <button className="press ml-auto rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-2.5 text-sm font-semibold text-white shadow-brand-glow">
-          Пополнить
-        </button>
       </div>
 
       {/* Stats */}
@@ -333,6 +571,11 @@ export function Profile({
 
       {/* Menu — Настройки + Реферальная система рядом */}
       <div className="grid grid-cols-2 gap-3">
+        <MenuTile
+          label="Заполнить анкету"
+          Icon={EditIcon}
+          onClick={() => setScreen("survey")}
+        />
         <MenuTile
           label="Настройки"
           Icon={SettingsIcon}

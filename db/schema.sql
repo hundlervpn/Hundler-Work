@@ -43,3 +43,16 @@ CREATE TABLE IF NOT EXISTS responses (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS responses_freelancer_idx ON responses (freelancer_id);
+
+-- Freelancer questionnaire ("Заполнить анкету"): one row per user, filled when
+-- acting as исполнитель.
+CREATE TABLE IF NOT EXISTS freelancer_profiles (
+  telegram_id    BIGINT PRIMARY KEY REFERENCES users (telegram_id) ON DELETE CASCADE,
+  headline       TEXT,           -- специализация / краткий заголовок
+  about          TEXT,           -- о себе
+  skills         TEXT,           -- навыки (список через запятую)
+  hourly_rate    NUMERIC(18,2),  -- ставка
+  currency       TEXT NOT NULL DEFAULT 'USDT',
+  portfolio_url  TEXT,           -- ссылка на портфолио
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);

@@ -74,6 +74,18 @@ export function ensureSchema(): Promise<void> {
       await p.query(
         `CREATE INDEX IF NOT EXISTS responses_freelancer_idx ON responses (freelancer_id);`
       );
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS freelancer_profiles (
+          telegram_id   BIGINT PRIMARY KEY REFERENCES users (telegram_id) ON DELETE CASCADE,
+          headline      TEXT,
+          about         TEXT,
+          skills        TEXT,
+          hourly_rate   NUMERIC(18,2),
+          currency      TEXT NOT NULL DEFAULT 'USDT',
+          portfolio_url TEXT,
+          updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+        );
+      `);
     })().catch((e) => {
       // Reset so a later request can retry if the DB was momentarily unavailable.
       schemaReady = undefined;
