@@ -5,11 +5,20 @@ import { Price } from "./Price";
 import { ClockIcon, EyeIcon, UsersIcon, ChevronRight } from "./icons";
 import { pluralDays, pluralViews } from "@/lib/plural";
 
-export function OrderCard({ order }: { order: Order }) {
+export function OrderCard({
+  order,
+  onClick,
+}: {
+  order: Order;
+  onClick?: () => void;
+}) {
   const accentText =
     order.accent === "violet" ? "text-brand-violet-bright" : "text-brand-red-bright";
   return (
-    <article className="group h-full cursor-pointer rounded-3xl bg-card p-2 shadow-border press hover:shadow-border-hover">
+    <article
+      onClick={onClick}
+      className="group h-full cursor-pointer rounded-3xl bg-card p-2 shadow-border press hover:shadow-border-hover"
+    >
       <div className="flex h-full flex-col rounded-[1.25rem] p-4">
         <div className="flex items-start gap-3">
           <OrderIcon icon={order.icon} accent={order.accent} />

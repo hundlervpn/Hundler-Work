@@ -1,8 +1,9 @@
 "use client";
 import * as React from "react";
 import { CHATS, type Chat } from "@/lib/data";
-import { ChevronRight } from "../icons";
+import { ChevronRight, ChatIcon } from "../icons";
 import { ChatView } from "../ChatView";
+import { EmptyState } from "../EmptyState";
 
 function initials(name: string) {
   return name
@@ -29,6 +30,13 @@ export function Chats() {
         </p>
       </div>
 
+      {CHATS.length === 0 ? (
+        <EmptyState
+          icon={ChatIcon}
+          title="Нет сообщений"
+          subtitle="Здесь появятся переписки с заказчиками и исполнителями"
+        />
+      ) : (
       <div className="overflow-hidden rounded-3xl bg-card p-2 shadow-border">
         <div className="flex flex-col">
           {CHATS.map((c) => (
@@ -69,6 +77,7 @@ export function Chats() {
           ))}
         </div>
       </div>
+      )}
     </div>
   );
 }

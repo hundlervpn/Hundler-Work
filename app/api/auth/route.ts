@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { getPool } from "@/lib/db";
+import { getPool, ensureSchema } from "@/lib/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -74,6 +74,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid initData" }, { status: 401 });
   }
 
+  await ensureSchema();
+
   const pool = getPool();
   const { rows } = await pool.query(
     `INSERT INTO users (telegram_id, first_name, last_name, username, photo_url)
@@ -84,7 +86,7 @@ export async function POST(req: NextRequest) {
            username   = EXCLUDED.username,
            photo_url  = EXCLUDED.photo_url,
            updated_at = now()
-     RETURNING telegram_id, first_name, last_name, username, photo_url, freelancer_id, client_id`,
+     RETURNING telegram_id, first_name, last_name, username, photo_url, freelancer_id, client_id, balance`,
     [
       tg.id,
       tg.first_name ?? null,
@@ -104,6 +106,7 @@ export async function POST(req: NextRequest) {
       photoUrl: u.photo_url ?? "",
       freelancerId: u.freelancer_id,
       clientId: u.client_id,
+      balance: Number(u.balance ?? 0),
     },
   });
 }

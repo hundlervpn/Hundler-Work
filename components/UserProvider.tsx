@@ -9,6 +9,7 @@ export type HWUser = {
   photoUrl?: string;
   freelancerId: string;
   clientId: string;
+  balance: number;
 };
 
 type Ctx = { user: HWUser | null; loading: boolean };

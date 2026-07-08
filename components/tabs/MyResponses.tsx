@@ -3,7 +3,8 @@ import { MY_RESPONSES, RESPONSE_STATUS } from "@/lib/data";
 import { OrderIcon } from "../OrderIcon";
 import { Price } from "../Price";
 import { StatusBadge } from "../StatusBadge";
-import { ChevronRight } from "../icons";
+import { ChevronRight, UsersIcon } from "../icons";
+import { EmptyState } from "../EmptyState";
 
 export function MyResponses() {
   return (
@@ -15,6 +16,13 @@ export function MyResponses() {
         </p>
       </div>
 
+      {MY_RESPONSES.length === 0 ? (
+        <EmptyState
+          icon={UsersIcon}
+          title="Нет откликов"
+          subtitle="Ваши заявки заказчикам появятся здесь"
+        />
+      ) : (
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {MY_RESPONSES.map((r) => {
           const st = RESPONSE_STATUS[r.status];
@@ -50,6 +58,7 @@ export function MyResponses() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }

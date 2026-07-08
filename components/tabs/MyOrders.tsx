@@ -3,8 +3,9 @@ import { MY_ORDERS, ORDER_STATUS } from "@/lib/data";
 import { OrderIcon } from "../OrderIcon";
 import { Price } from "../Price";
 import { StatusBadge } from "../StatusBadge";
-import { PlusIcon, UsersIcon, ChevronRight } from "../icons";
+import { PlusIcon, UsersIcon, ChevronRight, HomeIcon } from "../icons";
 import { pluralResponses } from "@/lib/plural";
+import { EmptyState } from "../EmptyState";
 
 export function MyOrders() {
   return (
@@ -22,6 +23,13 @@ export function MyOrders() {
         </button>
       </div>
 
+      {MY_ORDERS.length === 0 ? (
+        <EmptyState
+          icon={HomeIcon}
+          title="Нет заказов"
+          subtitle="Нажмите «Создать», чтобы разместить задание"
+        />
+      ) : (
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {MY_ORDERS.map((o) => {
           const st = ORDER_STATUS[o.status];
@@ -61,6 +69,7 @@ export function MyOrders() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }

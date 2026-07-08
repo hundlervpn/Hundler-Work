@@ -5,12 +5,13 @@ import {
   StarIcon,
   WalletIcon,
   SettingsIcon,
-  LogoutIcon,
   ChevronRight,
+  ChevronLeft,
   SunIcon,
   MoonIcon,
   UserIcon,
   BriefcaseIcon,
+  GiftIcon,
 } from "../icons";
 import type { ThemeMode, Role } from "@/lib/nav";
 import { useUser } from "../UserProvider";
@@ -63,6 +64,54 @@ function IdBadge({
   );
 }
 
+function MenuTile({
+  label,
+  Icon,
+  onClick,
+}: {
+  label: string;
+  Icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="press flex flex-col items-start gap-3 rounded-3xl bg-card p-4 text-left shadow-border hover:shadow-border-hover"
+    >
+      <span className="grid h-11 w-11 place-items-center rounded-2xl bg-raise text-brand-red-bright shadow-border">
+        <Icon className="h-5 w-5" />
+      </span>
+      <span className="text-sm font-semibold text-ink">{label}</span>
+    </button>
+  );
+}
+
+function SubScreen({
+  title,
+  onBack,
+  children,
+}: {
+  title: string;
+  onBack: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="stagger flex flex-col gap-5">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onBack}
+          aria-label="Назад"
+          className="press grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-card text-ink-muted shadow-border hover:text-ink"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <h1 className="text-2xl font-black tracking-tight text-ink">{title}</h1>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 function Segmented<T extends string>({
   value,
   options,
@@ -108,7 +157,75 @@ export function Profile({
 }) {
   const p = PROFILE;
   const { user } = useUser();
+  const [screen, setScreen] = React.useState<"main" | "settings" | "referral">(
+    "main"
+  );
   const roleLabel = role === "client" ? "Заказчик" : "Исполнитель";
+  const balance = user?.balance ?? p.balance;
+
+  if (screen === "settings") {
+    return (
+      <SubScreen title="Настройки" onBack={() => setScreen("main")}>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-card p-5 shadow-border">
+          <div>
+            <div className="font-semibold text-ink">Тема</div>
+            <div className="text-xs text-ink-muted">Светлая или тёмная</div>
+          </div>
+          <Segmented<ThemeMode>
+            value={theme}
+            onChange={setTheme}
+            options={[
+              { key: "dark", label: "Тёмная", Icon: MoonIcon },
+              { key: "light", label: "Светлая", Icon: SunIcon },
+            ]}
+          />
+        </div>
+      </SubScreen>
+    );
+  }
+
+  if (screen === "referral") {
+    const refLink = user?.freelancerId
+      ? `https://hundlerwork.duckdns.org/?ref=${user.freelancerId}`
+      : "https://hundlerwork.duckdns.org/";
+    return (
+      <SubScreen title="Реферальная система" onBack={() => setScreen("main")}>
+        <div className="rounded-3xl bg-card p-2 shadow-border">
+          <div className="rounded-[1.25rem] bg-gradient-to-br from-brand-red/20 via-transparent to-brand-violet/10 p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-red/15 text-brand-red-bright shadow-border">
+                <GiftIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="font-semibold text-ink">Приглашайте друзей</div>
+                <div className="text-xs text-ink-muted">
+                  Делитесь ссылкой и получайте бонусы
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 rounded-2xl bg-raise p-3 shadow-border">
+              <div className="text-[11px] text-ink-muted">Ваша ссылка</div>
+              <div className="mt-0.5 w-full truncate font-mono text-xs text-ink">
+                {refLink}
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                try {
+                  navigator.clipboard?.writeText(refLink);
+                } catch {
+                  // ignore
+                }
+              }}
+              className="press mt-3 w-full rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3 text-sm font-semibold text-white shadow-brand-glow"
+            >
+              Скопировать ссылку
+            </button>
+          </div>
+        </div>
+      </SubScreen>
+    );
+  }
   const displayName = user
     ? [user.firstName, user.lastName].filter(Boolean).join(" ") ||
       user.username ||
@@ -190,22 +307,6 @@ export function Profile({
         />
       </div>
 
-      {/* Theme switch */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-card p-5 shadow-border">
-        <div>
-          <div className="font-semibold text-ink">Тема</div>
-          <div className="text-xs text-ink-muted">По умолчанию — тёмная</div>
-        </div>
-        <Segmented<ThemeMode>
-          value={theme}
-          onChange={setTheme}
-          options={[
-            { key: "dark", label: "Тёмная", Icon: MoonIcon },
-            { key: "light", label: "Светлая", Icon: SunIcon },
-          ]}
-        />
-      </div>
-
       {/* Balance */}
       <div className="flex items-center gap-3 rounded-3xl bg-card p-5 shadow-border">
         <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-red/15 text-brand-red-bright shadow-border">
@@ -214,7 +315,7 @@ export function Profile({
         <div>
           <div className="text-xs text-ink-muted">Баланс</div>
           <div className="tnum text-2xl font-bold text-ink">
-            {p.balance}
+            {balance}
             <span className="ml-1 text-sm font-semibold text-ink-muted">{p.currency}</span>
           </div>
         </div>
@@ -230,23 +331,18 @@ export function Profile({
         <Stat value={p.done} label="Завершено" />
       </div>
 
-      {/* Menu */}
-      <div className="overflow-hidden rounded-3xl bg-card p-2 shadow-border">
-        {[
-          { label: "Настройки", Icon: SettingsIcon },
-          { label: "Выйти", Icon: LogoutIcon },
-        ].map(({ label, Icon }) => (
-          <button
-            key={label}
-            className="press flex w-full items-center gap-3 rounded-2xl p-3 text-left hover:bg-raise"
-          >
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-raise text-ink-muted">
-              <Icon className="h-5 w-5" />
-            </span>
-            <span className="flex-1 font-medium text-ink">{label}</span>
-            <ChevronRight className="h-4 w-4 text-ink-muted" />
-          </button>
-        ))}
+      {/* Menu — Настройки + Реферальная система рядом */}
+      <div className="grid grid-cols-2 gap-3">
+        <MenuTile
+          label="Настройки"
+          Icon={SettingsIcon}
+          onClick={() => setScreen("settings")}
+        />
+        <MenuTile
+          label="Реферальная система"
+          Icon={GiftIcon}
+          onClick={() => setScreen("referral")}
+        />
       </div>
     </div>
   );

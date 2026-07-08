@@ -1,10 +1,20 @@
+"use client";
 import * as React from "react";
 import { SearchBar } from "../SearchBar";
 import { CategorySelect } from "../CategorySelect";
 import { OrderCard } from "../OrderCard";
-import { ORDERS } from "@/lib/data";
+import { OrderDetail } from "../OrderDetail";
+import { EmptyState } from "../EmptyState";
+import { ORDERS, type Order } from "@/lib/data";
+import { SearchIcon } from "../icons";
 
 export function FindWork() {
+  const [open, setOpen] = React.useState<Order | null>(null);
+
+  if (open) {
+    return <OrderDetail order={open} onBack={() => setOpen(null)} />;
+  }
+
   return (
     <div className="stagger flex flex-col gap-5">
       <div>
@@ -17,11 +27,19 @@ export function FindWork() {
       <SearchBar />
       <CategorySelect />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        {ORDERS.map((o) => (
-          <OrderCard key={o.id} order={o} />
-        ))}
-      </div>
+      {ORDERS.length === 0 ? (
+        <EmptyState
+          icon={SearchIcon}
+          title="Пока нет заказов"
+          subtitle="Новые задания появятся здесь"
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+          {ORDERS.map((o) => (
+            <OrderCard key={o.id} order={o} onClick={() => setOpen(o)} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

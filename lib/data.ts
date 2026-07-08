@@ -25,86 +25,8 @@ export const CATEGORIES = [
   "Видео",
 ] as const;
 
-export const ORDERS: Order[] = [
-  {
-    id: "1",
-    title: "TikTok SMM",
-    subtitle: "крипта",
-    price: 80,
-    currency: "USDT",
-    tags: ["Контент", "TikTok"],
-    days: 31,
-    views: 24,
-    responses: 0,
-    accent: "red",
-    icon: "tiktok",
-  },
-  {
-    id: "2",
-    title: "AI-автоответчик для VK",
-    subtitle: "VK",
-    price: 150,
-    currency: "USDT",
-    tags: ["Разработка", "AI"],
-    days: 14,
-    views: 52,
-    responses: 3,
-    accent: "red",
-    icon: "code",
-  },
-  {
-    id: "3",
-    title: "Лендинг под NFT-дроп",
-    subtitle: "Web3 · дизайн",
-    price: 220,
-    currency: "USDT",
-    tags: ["Дизайн", "NFT"],
-    days: 7,
-    views: 118,
-    responses: 9,
-    accent: "violet",
-    icon: "design",
-  },
-  {
-    id: "4",
-    title: "Монтаж Reels под запуск",
-    subtitle: "видео",
-    price: 60,
-    currency: "USDT",
-    tags: ["Видео", "Reels"],
-    days: 5,
-    views: 41,
-    responses: 2,
-    accent: "red",
-    icon: "video",
-  },
-  {
-    id: "5",
-    title: "Тексты для крипто-канала",
-    subtitle: "контент",
-    price: 45,
-    currency: "USDT",
-    tags: ["Контент", "Копирайт"],
-    days: 21,
-    views: 33,
-    responses: 1,
-    accent: "red",
-    icon: "text",
-  },
-  {
-    id: "6",
-    title: "Смарт-контракт стейкинга",
-    subtitle: "Solidity",
-    price: 900,
-    currency: "USDT",
-    tags: ["Разработка", "Крипта"],
-    days: 30,
-    views: 210,
-    responses: 14,
-    accent: "violet",
-    icon: "crypto",
-  },
-];
+// No demo orders — real orders come from the DB per user.
+export const ORDERS: Order[] = [];
 
 /* ---- Мои отклики ---- */
 export type ResponseStatus = "pending" | "accepted" | "rejected";
@@ -129,38 +51,8 @@ export type MyResponse = {
   accent: Accent;
 };
 
-export const MY_RESPONSES: MyResponse[] = [
-  {
-    id: "r1",
-    orderTitle: "AI-автоответчик для VK",
-    price: 150,
-    currency: "USDT",
-    status: "accepted",
-    sentAt: "2 часа назад",
-    icon: "code",
-    accent: "red",
-  },
-  {
-    id: "r2",
-    orderTitle: "Смарт-контракт стейкинга",
-    price: 900,
-    currency: "USDT",
-    status: "pending",
-    sentAt: "1 день назад",
-    icon: "crypto",
-    accent: "violet",
-  },
-  {
-    id: "r3",
-    orderTitle: "Лендинг под NFT-дроп",
-    price: 220,
-    currency: "USDT",
-    status: "rejected",
-    sentAt: "3 дня назад",
-    icon: "design",
-    accent: "violet",
-  },
-];
+// No demo responses — real responses come from the DB per user.
+export const MY_RESPONSES: MyResponse[] = [];
 
 /* ---- Мои заказы ---- */
 export type OrderStatus = "active" | "in_progress" | "done";
@@ -186,41 +78,8 @@ export type MyOrder = {
   accent: Accent;
 };
 
-export const MY_ORDERS: MyOrder[] = [
-  {
-    id: "o1",
-    title: "Редизайн Telegram-бота",
-    price: 300,
-    currency: "USDT",
-    status: "active",
-    responses: 6,
-    createdAt: "Сегодня",
-    icon: "design",
-    accent: "red",
-  },
-  {
-    id: "o2",
-    title: "Парсер цен с бирж",
-    price: 180,
-    currency: "USDT",
-    status: "in_progress",
-    responses: 4,
-    createdAt: "2 дня назад",
-    icon: "code",
-    accent: "violet",
-  },
-  {
-    id: "o3",
-    title: "Промо-ролик для запуска",
-    price: 120,
-    currency: "USDT",
-    status: "done",
-    responses: 11,
-    createdAt: "неделю назад",
-    icon: "video",
-    accent: "red",
-  },
-];
+// No demo orders — real orders come from the DB per user.
+export const MY_ORDERS: MyOrder[] = [];
 
 /* ---- Чаты ---- */
 export type Chat = {
@@ -233,55 +92,19 @@ export type Chat = {
   accent: Accent;
 };
 
-export const CHATS: Chat[] = [
-  {
-    id: "c1",
-    name: "Алексей К.",
-    role: "Исполнитель",
-    last: "Готов взять заказ, когда стартуем?",
-    time: "12:40",
-    unread: 2,
-    accent: "red",
-  },
-  {
-    id: "c2",
-    name: "Марина В.",
-    role: "Заказчик",
-    last: "Отправила ТЗ, посмотрите пожалуйста",
-    time: "11:05",
-    unread: 0,
-    accent: "violet",
-  },
-  {
-    id: "c3",
-    name: "Dev Team",
-    role: "Группа",
-    last: "Денис: залил первую версию на стейдж",
-    time: "Вчера",
-    unread: 5,
-    accent: "red",
-  },
-  {
-    id: "c4",
-    name: "Ольга П.",
-    role: "Исполнитель",
-    last: "Спасибо за отзыв! 🙌",
-    time: "Пн",
-    unread: 0,
-    accent: "violet",
-  },
-];
+// No demo chats — chats appear once real conversations exist.
+export const CHATS: Chat[] = [];
 
 /* ---- Профиль / статистика ---- */
 export const PROFILE = {
   name: "mihailzareckij10",
   role: "Заказчик · Исполнитель",
-  rating: 4.9,
-  balance: 1240,
+  rating: 0,
+  balance: 0,
   currency: "USDT",
-  activeOrders: 3,
-  activeResponses: 2,
-  done: 27,
+  activeOrders: 0,
+  activeResponses: 0,
+  done: 0,
 };
 
 /* ---- Сообщения в чатах ---- */
@@ -292,25 +115,5 @@ export type Message = {
   time: string;
 };
 
-export const MESSAGES: Record<string, Message[]> = {
-  c1: [
-    { id: "m1", text: "Привет! Видел ваш заказ на AI-автоответчик, интересно.", mine: false, time: "12:30" },
-    { id: "m2", text: "Привет! Да, актуально. Есть опыт с VK API?", mine: true, time: "12:33" },
-    { id: "m3", text: "Да, делал пару ботов на callback API + long poll.", mine: false, time: "12:36" },
-    { id: "m4", text: "Отлично. Сроки и бюджет примерно как в заказе?", mine: true, time: "12:38" },
-    { id: "m5", text: "Готов взять заказ, когда стартуем?", mine: false, time: "12:40" },
-  ],
-  c2: [
-    { id: "m1", text: "Отправила ТЗ, посмотрите пожалуйста", mine: false, time: "11:05" },
-    { id: "m2", text: "Спасибо, гляну в течение часа 👌", mine: true, time: "11:07" },
-  ],
-  c3: [
-    { id: "m1", text: "Залил первую версию на стейдж", mine: false, time: "Вчера" },
-    { id: "m2", text: "Супер, скинь ссылку на превью", mine: true, time: "Вчера" },
-    { id: "m3", text: "https://stage.hundler.work", mine: false, time: "Вчера" },
-  ],
-  c4: [
-    { id: "m1", text: "Спасибо за отзыв! 🙌", mine: false, time: "Пн" },
-    { id: "m2", text: "Заслуженно, работа топ 🔥", mine: true, time: "Пн" },
-  ],
-};
+// No demo messages — conversations start empty.
+export const MESSAGES: Record<string, Message[]> = {};
