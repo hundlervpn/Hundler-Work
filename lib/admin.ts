@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import crypto from "crypto";
 // Admin credentials & session are configured entirely through env vars so that
 // no secrets ever live in the repository. See .env.example.

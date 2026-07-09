@@ -1,3 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getPool, ensureSchema } from "@/lib/db";
+import { createInvoice, OXAPAY_CONFIGURED } from "@/lib/oxapay";
+import { parseAndValidate } from "@/lib/telegram";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
