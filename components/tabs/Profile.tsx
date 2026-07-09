@@ -323,6 +323,7 @@ export function Profile({
   const { initData, setProfile } = useUser();
   const roleLabel = role === "client" ? "Заказчик" : "Исполнитель";
   const balance = user?.balance ?? p.balance;
+  const [payModal, setPayModal] = React.useState<null | "deposit" | "withdraw">(null);
 
   if (screen === "survey") {
     return (
@@ -550,15 +551,30 @@ export function Profile({
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <button className="press inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3 text-sm font-semibold text-white shadow-brand-glow">
+            <button
+              onClick={() => setPayModal("deposit")}
+              className="press inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3 text-sm font-semibold text-white shadow-brand-glow"
+            >
               <PlusIcon className="h-4 w-4" />
               Пополнить
             </button>
-            <button className="press inline-flex items-center justify-center gap-2 rounded-2xl bg-raise px-4 py-3 text-sm font-semibold text-ink shadow-border hover:text-brand-red-bright">
+            <button
+              onClick={() => setPayModal("withdraw")}
+              className="press inline-flex items-center justify-center gap-2 rounded-2xl bg-raise px-4 py-3 text-sm font-semibold text-ink shadow-border hover:text-brand-red-bright"
+            >
               <UploadIcon className="h-4 w-4" />
               Вывести
             </button>
           </div>
+          {payModal ? (
+            <PaymentSheet
+              mode={payModal}
+              initData={initData}
+              balance={balance}
+              currency={p.currency}
+              onClose={() => setPayModal(null)}
+            />
+          ) : null}
         </div>
       </div>
 
@@ -586,6 +602,167 @@ export function Profile({
           Icon={GiftIcon}
           onClick={() => setScreen("referral")}
         />
+      </div>
+    </div>
+  );
+}
+
+function PaymentSheet({
+  mode,
+  initData,
+  balance,
+  currency,
+  onClose,
+}: {
+  mode: "deposit" | "withdraw";
+  initData: string;
+  balance: number;
+  currency: string;
+  onClose: () => void;
+}) {
+  const [amount, setAmount] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [network, setNetwork] = React.useState("");
+  const [busy, setBusy] = React.useState(false);
+  const [msg, setMsg] = React.useState<string | null>(null);
+  const [err, setErr] = React.useState<string | null>(null);
+
+  function openLink(url: string) {
+    const tg = (window as any)?.Telegram?.WebApp;
+    if (tg?.openLink) tg.openLink(url);
+    else window.open(url, "_blank");
+  }
+
+  async function submit() {
+    setErr(null);
+    setMsg(null);
+    const amt = Number(amount);
+    if (!Number.isFinite(amt) || amt <= 0) {
+      setErr("Введите корректную сумму");
+      return;
+    }
+    setBusy(true);
+    try {
+      if (mode === "deposit") {
+        const res = await fetch("/api/deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData, amount: amt }),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (res.ok && j.paymentUrl) {
+          setMsg("Счёт создан. Открываем оплату…");
+          openLink(j.paymentUrl);
+        } else {
+          setErr(
+            j.error === "payments-disabled"
+              ? "Приём платежей временно отключён"
+              : "Не удалось создать счёт"
+          );
+        }
+      } else {
+        if (!address.trim()) {
+          setErr("Укажите адрес кошелька");
+          setBusy(false);
+          return;
+        }
+        if (amt > balance) {
+          setErr("Недостаточно средств на балансе");
+          setBusy(false);
+          return;
+        }
+        const res = await fetch("/api/withdraw", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData, amount: amt, address, network }),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (res.ok) {
+          setMsg("Заявка на вывод создана и отправлена на модерацию.");
+        } else if (j.error === "insufficient-funds") {
+          setErr("Недостаточно средств");
+        } else {
+          setErr("Не удалось создать заявку");
+        }
+      }
+    } catch {
+      setErr("Сетевая ошибка, попробуйте позже");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-t-3xl bg-card p-5 shadow-border sm:rounded-3xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-ink">
+            {mode === "deposit" ? "Пополнение баланса" : "Вывод средств"}
+          </h3>
+          <button
+            onClick={onClose}
+            className="press rounded-xl bg-raise px-3 py-1 text-sm text-ink-muted"
+          >
+            Закрыть
+          </button>
+        </div>
+
+        {mode === "withdraw" ? (
+          <div className="mb-2 text-xs text-ink-muted">
+            Доступно: {balance} {currency}
+          </div>
+        ) : (
+          <div className="mb-2 text-xs text-ink-muted">Оплата в USDT через OxaPay</div>
+        )}
+
+        <label className="mb-1 block text-xs text-ink-muted">Сумма</label>
+        <input
+          inputMode="decimal"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="0.00"
+          className="mb-3 w-full rounded-2xl bg-raise px-4 py-3 text-sm text-ink shadow-border outline-none"
+        />
+
+        {mode === "withdraw" ? (
+          <>
+            <label className="mb-1 block text-xs text-ink-muted">Адрес кошелька</label>
+            <input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Адрес получателя"
+              className="mb-3 w-full rounded-2xl bg-raise px-4 py-3 text-sm text-ink shadow-border outline-none"
+            />
+            <label className="mb-1 block text-xs text-ink-muted">Сеть (необязательно)</label>
+            <input
+              value={network}
+              onChange={(e) => setNetwork(e.target.value)}
+              placeholder="TRC20 / ERC20 / BEP20…"
+              className="mb-3 w-full rounded-2xl bg-raise px-4 py-3 text-sm text-ink shadow-border outline-none"
+            />
+          </>
+        ) : null}
+
+        {err ? <div className="mb-2 text-sm text-brand-red-bright">{err}</div> : null}
+        {msg ? <div className="mb-2 text-sm text-emerald-400">{msg}</div> : null}
+
+        <button
+          disabled={busy}
+          onClick={submit}
+          className="press mt-1 w-full rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep px-4 py-3 text-sm font-semibold text-white shadow-brand-glow disabled:opacity-60"
+        >
+          {busy
+            ? "Обработка…"
+            : mode === "deposit"
+            ? "Создать счёт"
+            : "Отправить заявку"}
+        </button>
       </div>
     </div>
   );

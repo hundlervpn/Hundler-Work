@@ -86,6 +86,50 @@ export function ensureSchema(): Promise<void> {
           updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
         );
       `);
+
+      // ---- OxaPay deposits (пополнения баланса) ----
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS deposits (
+          id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          telegram_id  BIGINT NOT NULL REFERENCES users (telegram_id) ON DELETE CASCADE,
+          track_id     TEXT UNIQUE,
+          amount       NUMERIC(18,2) NOT NULL,
+          currency     TEXT NOT NULL DEFAULT 'USDT',
+          status       TEXT NOT NULL DEFAULT 'pending',
+          payment_url  TEXT,
+          created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+        );
+      `);
+      await p.query(`CREATE INDEX IF NOT EXISTS deposits_tg_idx ON deposits (telegram_id);`);
+      await p.query(`CREATE INDEX IF NOT EXISTS deposits_track_idx ON deposits (track_id);`);
+
+      // ---- Withdrawals (выводы средств через OxaPay payout) ----
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS withdrawals (
+          id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          telegram_id  BIGINT NOT NULL REFERENCES users (telegram_id) ON DELETE CASCADE,
+          track_id     TEXT,
+          amount       NUMERIC(18,2) NOT NULL,
+          currency     TEXT NOT NULL DEFAULT 'USDT',
+          address      TEXT NOT NULL,
+          network      TEXT,
+          status       TEXT NOT NULL DEFAULT 'pending',
+          admin_note   TEXT,
+          created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+        );
+      `);
+      await p.query(`CREATE INDEX IF NOT EXISTS withdrawals_tg_idx ON withdrawals (telegram_id);`);
+      await p.query(`CREATE INDEX IF NOT EXISTS withdrawals_status_idx ON withdrawals (status);`);
+
+      // ---- Поля модерации для заказов и резюме ----
+      await p.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS moderation_status TEXT NOT NULL DEFAULT 'pending';`);
+      await p.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS admin_note TEXT;`);
+      await p.query(`CREATE INDEX IF NOT EXISTS orders_moderation_idx ON orders (moderation_status);`);
+      await p.query(`ALTER TABLE freelancer_profiles ADD COLUMN IF NOT EXISTS moderation_status TEXT NOT NULL DEFAULT 'pending';`);
+      await p.query(`ALTER TABLE freelancer_profiles ADD COLUMN IF NOT EXISTS admin_note TEXT;`);
+      await p.query(`CREATE INDEX IF NOT EXISTS fp_moderation_idx ON freelancer_profiles (moderation_status);`);
     })().catch((e) => {
       // Reset so a later request can retry if the DB was momentarily unavailable.
       schemaReady = undefined;

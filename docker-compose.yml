@@ -26,6 +26,15 @@ services:
     environment:
       - DATABASE_URL=postgres://hundler:${POSTGRES_PASSWORD}@db:5432/hundlerwork
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      # --- OxaPay payments ---
+      - OXAPAY_MERCHANT_API_KEY=${OXAPAY_MERCHANT_API_KEY}
+      - OXAPAY_PAYOUT_API_KEY=${OXAPAY_PAYOUT_API_KEY}
+      - OXAPAY_CALLBACK_URL=${OXAPAY_CALLBACK_URL}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL}
+      # --- Admin panel ---
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET}
     depends_on:
       db:
         condition: service_healthy

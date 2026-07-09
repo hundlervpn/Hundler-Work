@@ -56,3 +56,50 @@ CREATE TABLE IF NOT EXISTS freelancer_profiles (
   portfolio_url  TEXT,           -- ссылка на портфолио
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+
+-- ============================================================
+-- OxaPay deposits (balance top-ups). Added for payments feature.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS deposits (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  telegram_id  BIGINT NOT NULL REFERENCES users (telegram_id) ON DELETE CASCADE,
+  track_id     TEXT UNIQUE,               -- OxaPay track_id
+  amount       NUMERIC(18,2) NOT NULL,
+  currency     TEXT NOT NULL DEFAULT 'USDT',
+  status       TEXT NOT NULL DEFAULT 'pending', -- pending | paid | expired | failed
+  payment_url  TEXT,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS deposits_tg_idx ON deposits (telegram_id);
+CREATE INDEX IF NOT EXISTS deposits_track_idx ON deposits (track_id);
+
+-- ============================================================
+-- Withdrawals (payouts via OxaPay). Admin-approved.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS withdrawals (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  telegram_id  BIGINT NOT NULL REFERENCES users (telegram_id) ON DELETE CASCADE,
+  track_id     TEXT,                      -- OxaPay payout track_id (after approval)
+  amount       NUMERIC(18,2) NOT NULL,
+  currency     TEXT NOT NULL DEFAULT 'USDT',
+  address      TEXT NOT NULL,
+  network      TEXT,
+  status       TEXT NOT NULL DEFAULT 'pending', -- pending | approved | rejected | paid | failed
+  admin_note   TEXT,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS withdrawals_tg_idx ON withdrawals (telegram_id);
+CREATE INDEX IF NOT EXISTS withdrawals_status_idx ON withdrawals (status);
+
+-- ============================================================
+-- Moderation fields for orders and freelancer resumes.
+-- ============================================================
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS moderation_status TEXT NOT NULL DEFAULT 'pending'; -- pending | approved | rejected
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS admin_note TEXT;
+CREATE INDEX IF NOT EXISTS orders_moderation_idx ON orders (moderation_status);
+ALTER TABLE freelancer_profiles ADD COLUMN IF NOT EXISTS moderation_status TEXT NOT NULL DEFAULT 'pending';
+ALTER TABLE freelancer_profiles ADD COLUMN IF NOT EXISTS admin_note TEXT;
+CREATE INDEX IF NOT EXISTS fp_moderation_idx ON freelancer_profiles (moderation_status);
