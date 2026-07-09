@@ -1,75 +1,12 @@
+"use client";
 import * as React from "react";
-import { MY_ORDERS, ORDER_STATUS } from "@/lib/data";
-import { OrderIcon } from "../OrderIcon";
-import { Price } from "../Price";
-import { StatusBadge } from "../StatusBadge";
-import { PlusIcon, UsersIcon, ChevronRight, HomeIcon } from "../icons";
-import { pluralResponses } from "@/lib/plural";
+import type { Order } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import { ChevronLeft, ChevronRight, PlusIcon, UploadIcon } from "../icons";
 import { EmptyState } from "../EmptyState";
-
-export function MyOrders() {
-  return (
-    <div className="stagger flex flex-col gap-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-ink">Мои заказы</h1>
-          <p className="mt-1 text-pretty text-sm text-ink-muted">
-            Задания, которые вы разместили
-          </p>
-        </div>
-        <button className="press inline-flex shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-br from-brand-red to-brand-red-deep pl-4 pr-3.5 py-2.5 text-sm font-semibold text-white shadow-brand-glow">
-          <span>Создать</span>
-          <PlusIcon className="h-4 w-4" />
-        </button>
-      </div>
-
-      {MY_ORDERS.length === 0 ? (
-        <EmptyState
-          icon={HomeIcon}
-          title="Нет заказов"
-          subtitle="Нажмите «Создать», чтобы разместить задание"
-        />
-      ) : (
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {MY_ORDERS.map((o) => {
-          const st = ORDER_STATUS[o.status];
-          const accentText =
-            o.accent === "violet" ? "text-brand-violet-bright" : "text-brand-red-bright";
-          return (
-            <article
-              key={o.id}
-              className="group cursor-pointer rounded-3xl bg-card p-2 shadow-border press hover:shadow-border-hover"
-            >
-              <div className="rounded-[1.25rem] p-4">
-                <div className="flex items-start gap-3">
-                  <OrderIcon icon={o.icon} accent={o.accent} />
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-[16px] font-semibold leading-tight text-ink">
-                      {o.title}
-                    </h3>
-                    <p className="mt-1 text-xs text-ink-muted">Создан {o.createdAt}</p>
-                  </div>
-                  <Price value={o.price} currency={o.currency} size="md" />
-                </div>
-                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-hair pt-3">
-                  <StatusBadge label={st.label} className={st.className} />
-                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-muted">
-                    <UsersIcon className="h-3.5 w-3.5" />
-                    <span className="tnum">{o.responses}</span> {pluralResponses(o.responses)}
-                  </span>
-                  <span
-                    className={`ml-auto inline-flex items-center gap-1 text-sm font-medium ${accentText} transition-transform duration-200 group-hover:translate-x-0.5`}
-                  >
-                    Открыть
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      )}
-    </div>
-  );
-}
+import { HomeIcon } from "../icons";
+import { useUser } from "../UserProvider";
+const input="w-full rounded-2xl bg-raise px-4 py-3.5 text-base text-ink shadow-border outline-none focus:ring-2 focus:ring-brand-red/40";
+export function MyOrders(){const{initData,user}=useUser();const[items,setItems]=React.useState<Order[]>([]);const[creating,setCreating]=React.useState(false);const[step,setStep]=React.useState(0);const[form,setForm]=React.useState({category:"Разработка",title:"",shortDescription:"",description:"",price:"",days:"1",imageUrl:""});const[msg,setMsg]=React.useState("");const load=React.useCallback(()=>{if(!initData)return;fetch(`/api/orders?scope=mine&initData=${encodeURIComponent(initData)}`).then(r=>r.json()).then(d=>setItems(d.items||[]));},[initData]);React.useEffect(load,[load]);async function image(file?:File){if(!file)return;if(file.size>1024*1024){setMsg("Фото должно быть меньше 1 МБ");return;}const reader=new FileReader();reader.onload=()=>setForm(f=>({...f,imageUrl:String(reader.result)}));reader.readAsDataURL(file);}async function create(){setMsg("");const r=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...form,initData,action:'create'})});const d=await r.json();if(!r.ok){setMsg(d.error==='insufficient-funds'?'Недостаточно денег на балансе':'Проверьте все поля');return;}setCreating(false);setStep(0);setForm({category:"Разработка",title:"",shortDescription:"",description:"",price:"",days:"1",imageUrl:""});load();}async function act(action:string,id:string,freelancerId?:number){await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData,action,id,freelancerId})});load();}
+if(creating)return <div className="stagger pb-8"><header className="mb-6 flex items-center gap-3"><button type="button" onClick={()=>step?setStep(step-1):setCreating(false)} className="press grid h-11 w-11 place-items-center rounded-2xl bg-raise shadow-border"><ChevronLeft className="h-5 w-5"/></button><div><h1 className="text-xl font-bold text-ink">Новый заказ</h1><p className="text-sm text-ink-muted">Шаг {step+1} из 4</p></div></header><div className="mb-7 grid grid-cols-4 gap-2">{[0,1,2,3].map(n=><div key={n} className={`h-1.5 rounded-full ${n<=step?'bg-brand-red':'bg-raise'}`}/>)}</div>{step===0?<section><h2 className="text-2xl font-bold">Категория</h2><div className="mt-5 grid grid-cols-2 gap-3">{CATEGORIES.filter(x=>x!=="Все категории").map(c=><button type="button" key={c} onClick={()=>setForm({...form,category:c})} className={`press min-h-[52px] rounded-2xl px-3 text-sm font-bold shadow-border ${form.category===c?'bg-brand-red text-white':'bg-card text-ink'}`}>{c}</button>)}</div></section>:step===1?<section className="space-y-4"><h2 className="text-2xl font-bold">О заказе</h2><label className="block text-sm font-bold">Название<input className={`${input} mt-2`} maxLength={120} value={form.title} onChange={e=>setForm({...form,title:e.target.value})}/></label><label className="block text-sm font-bold">Короткое описание<input className={`${input} mt-2`} maxLength={160} value={form.shortDescription} onChange={e=>setForm({...form,shortDescription:e.target.value})}/></label><label className="block text-sm font-bold">Полное описание<textarea className={`${input} mt-2 min-h-36 resize-y`} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label><label className="press flex min-h-[64px] cursor-pointer items-center justify-center gap-2 rounded-2xl bg-card font-bold shadow-border"><UploadIcon className="h-5 w-5"/>{form.imageUrl?'Фото добавлено ✓':'Добавить фото'}<input type="file" accept="image/*" className="hidden" onChange={e=>image(e.target.files?.[0])}/></label>{form.imageUrl?<img src={form.imageUrl} alt="" className="max-h-52 w-full rounded-2xl object-cover"/>:null}</section>:step===2?<section className="space-y-4"><h2 className="text-2xl font-bold">Бюджет и срок</h2><label className="block text-sm font-bold">Цена, USDT<input inputMode="decimal" className={`${input} mt-2`} value={form.price} onChange={e=>setForm({...form,price:e.target.value.replace(/[^\d.]/g,'')})}/></label><label className="block text-sm font-bold">Срок, дней<input inputMode="numeric" className={`${input} mt-2`} value={form.days} onChange={e=>setForm({...form,days:e.target.value.replace(/\D/g,'')})}/></label><div className="rounded-2xl bg-brand-red/10 p-4 text-sm leading-6 text-brand-red-bright">При публикации сумма замораживается. При отмене или отклонении модератором она вернётся на баланс.</div></section>:<section><h2 className="text-2xl font-bold">Публикация</h2><div className="mt-5 rounded-3xl bg-card p-5 shadow-border"><div className="text-xs font-bold text-brand-red-bright">{form.category}</div><h3 className="mt-2 text-xl font-bold">{form.title||"Без названия"}</h3><p className="mt-2 text-sm text-ink-muted">{form.shortDescription}</p><div className="tnum mt-5 text-2xl font-bold text-brand-red-bright">{form.price||0} USDT</div></div><p className="mt-4 text-sm text-ink-muted">После создания заказ отправится вам на модерацию.</p></section>}{msg?<p className="mt-4 rounded-2xl bg-brand-red/10 p-3 text-sm text-brand-red-bright">{msg}</p>:null}<button type="button" onClick={()=>step<3?setStep(step+1):create()} className="press mt-7 w-full rounded-2xl bg-brand-red px-4 py-4 font-bold text-white shadow-brand-glow">{step<3?'Далее':'Опубликовать и зарезервировать'}</button></div>;
+return <div className="stagger"><header className="mb-6 flex items-center justify-between"><div><h1 className="text-2xl font-bold">Мои заказы</h1><p className="mt-1 text-sm text-ink-muted">Баланс: {user?.balance??0} USDT</p></div><button type="button" onClick={()=>setCreating(true)} className="press flex min-h-[44px] items-center gap-2 rounded-2xl bg-brand-red px-4 text-sm font-bold text-white"><PlusIcon className="h-4 w-4"/>Создать</button></header>{items.length===0?<EmptyState Icon={HomeIcon} title="Заказов пока нет" description="Создайте первый заказ"/>:<div className="space-y-4">{items.map(o=><section key={o.id} className="rounded-3xl bg-card p-5 shadow-border"><div className="flex justify-between gap-3"><div><div className="text-xs font-bold text-brand-red-bright">{o.moderationStatus==='pending'?'На модерации':o.moderationStatus==='rejected'?'Отклонён':o.status==='in_progress'?'В работе':o.status==='done'?'Завершён':'Опубликован'}</div><h3 className="mt-1 text-lg font-bold">{o.title}</h3></div><div className="tnum font-bold">{o.price} USDT</div></div>{o.applicants?.length?<div className="mt-5 space-y-2"><div className="text-xs font-bold uppercase tracking-[.08em] text-ink-muted">Отклики</div>{o.applicants.map(a=><div key={a.responseId} className="flex items-center gap-3 rounded-2xl bg-raise p-3"><div className="min-w-0 flex-1 truncate text-sm font-semibold">{a.name}</div>{o.status==='active'&&o.moderationStatus==='approved'?<button type="button" onClick={()=>act('accept',o.id,a.telegramId)} className="press rounded-xl bg-brand-red px-3 py-2 text-xs font-bold text-white">Выбрать</button>:<span className="text-xs text-ink-muted">{a.status}</span>}</div>)}</div>:null}<div className="mt-5 flex gap-3">{o.status==='active'?<button type="button" onClick={()=>act('cancel',o.id)} className="press flex-1 rounded-2xl bg-raise px-3 py-3 text-sm font-bold">Отменить и вернуть</button>:null}{o.status==='in_progress'?<button type="button" onClick={()=>act('complete',o.id)} className="press flex-1 rounded-2xl bg-brand-red px-3 py-3 text-sm font-bold text-white">Подтвердить выполнение</button>:null}</div></section>)}</div>}</div>}

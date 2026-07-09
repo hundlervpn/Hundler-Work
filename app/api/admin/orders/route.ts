@@ -1,47 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin";
 import { ensureSchema, getPool } from "@/lib/db";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
-export async function GET(req: NextRequest) {
-  if (!isAdminRequest(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  await ensureSchema();
-  const pool = getPool();
-  const status = req.nextUrl.searchParams.get("status");
-  const params: any[] = [];
-  let where = "";
-  if (status) { params.push(status); where = "WHERE o.moderation_status = $1"; }
-  const r = await pool.query(
-    `SELECT o.id, o.title, o.description, o.price, o.currency, o.status,
-            o.moderation_status, o.admin_note, o.created_at,
-            o.owner_id, u.username, u.first_name, u.last_name
-     FROM orders o LEFT JOIN users u ON u.telegram_id = o.owner_id
-     ${where}
-     ORDER BY o.created_at DESC LIMIT 200;`,
-    params
-  );
-  return NextResponse.json({ items: r.rows });
-}
-
-export async function POST(req: NextRequest) {
-  if (!isAdminRequest(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const body = await req.json().catch(() => null);
-  const id = String(body?.id || "");
-  const action = String(body?.action || "");
-  const note = body?.note != null ? String(body.note) : null;
-  if (!id || !["approve", "reject"].includes(action)) {
-    return NextResponse.json({ error: "bad-request" }, { status: 400 });
-  }
-  await ensureSchema();
-  const pool = getPool();
-  const ms = action === "approve" ? "approved" : "rejected";
-  const r = await pool.query(
-    `UPDATE orders SET moderation_status = $1, admin_note = $2
-     WHERE id = $3 RETURNING id;`,
-    [ms, note, id]
-  );
-  if (!r.rowCount) return NextResponse.json({ error: "not-found" }, { status: 404 });
-  return NextResponse.json({ ok: true });
-}
+export const runtime="nodejs"; export const dynamic="force-dynamic";
+export async function GET(req:NextRequest){if(!isAdminRequest(req))return NextResponse.json({error:"unauthorized"},{status:401});await ensureSchema();const status=req.nextUrl.searchParams.get("status"),params:any[]=[];let where="";if(status){params.push(status);where="WHERE o.moderation_status=$1";}const r=await getPool().query(`SELECT o.id,o.title,o.short_description,o.description,o.category,o.deadline_days,o.image_data_url,o.price,o.currency,o.status,o.moderation_status,o.admin_note,o.created_at,o.owner_id,u.username,u.first_name,u.last_name FROM orders o LEFT JOIN users u ON u.telegram_id=o.owner_id ${where} ORDER BY o.created_at DESC LIMIT 200`,params);return NextResponse.json({items:r.rows});}
+export async function POST(req:NextRequest){if(!isAdminRequest(req))return NextResponse.json({error:"unauthorized"},{status:401});const body=await req.json().catch(()=>({})),id=String(body.id||""),action=String(body.action||""),note=body.note!=null?String(body.note):null;if(!id||!["approve","reject"].includes(action))return NextResponse.json({error:"bad-request"},{status:400});await ensureSchema();const client=await getPool().connect();try{await client.query("BEGIN");const locked=await client.query(`SELECT * FROM orders WHERE id=$1 FOR UPDATE`,[id]);if(!locked.rowCount){await client.query("ROLLBACK");return NextResponse.json({error:"not-found"},{status:404});}const order=locked.rows[0];if(action==="reject"&&order.funds_reserved){await client.query(`UPDATE users SET balance=balance+$1,updated_at=now() WHERE telegram_id=$2`,[order.price,order.owner_id]);await client.query(`UPDATE orders SET moderation_status='rejected',status='cancelled',funds_reserved=false,admin_note=$2 WHERE id=$1`,[id,note]);}else await client.query(`UPDATE orders SET moderation_status=$1,admin_note=$2 WHERE id=$3`,[action==="approve"?"approved":"rejected",note,id]);await client.query("COMMIT");return NextResponse.json({ok:true});}catch{await client.query("ROLLBACK");return NextResponse.json({error:"failed"},{status:500});}finally{client.release();}}
