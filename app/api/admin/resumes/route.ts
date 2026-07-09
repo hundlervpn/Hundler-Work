@@ -1,3 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin";
+import { ensureSchema, getPool } from "@/lib/db";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
