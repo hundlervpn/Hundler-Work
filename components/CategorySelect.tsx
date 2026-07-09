@@ -1,54 +1,18 @@
 "use client";
 import * as React from "react";
-import { GridIcon, ChevronDown } from "./icons";
+import { GridIcon } from "./icons";
 import { CATEGORIES } from "@/lib/data";
 
-export function CategorySelect() {
-  const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<string>(CATEGORIES[0]);
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="press flex w-full items-center gap-3 rounded-2xl bg-card px-4 py-3.5 shadow-border hover:shadow-border-hover"
-      >
-        <span className="grid h-6 w-6 place-items-center text-brand-red-bright">
-          <GridIcon className="h-5 w-5" />
-        </span>
-        <span className="flex-1 text-left text-[15px] font-medium text-ink">
-          {selected}
-        </span>
-        <ChevronDown
-          className={`h-5 w-5 text-ink-muted transition-transform duration-300 ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      {open && (
-        <div className="stagger absolute inset-x-0 top-full z-10 mt-2 overflow-hidden rounded-2xl bg-card p-2 shadow-border-hover">
-          {CATEGORIES.map((c) => {
-            const isSel = c === selected;
-            return (
-              <button
-                key={c}
-                onClick={() => {
-                  setSelected(c);
-                  setOpen(false);
-                }}
-                className={`press flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
-                  isSel
-                    ? "bg-gradient-to-r from-brand-red/25 to-brand-violet/10 text-ink"
-                    : "text-ink-muted hover:text-ink"
-                }`}
-              >
-                {c}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+export function CategorySelect({ selected, onChange }: { selected: string[]; onChange: (categories: string[]) => void }) {
+ const choices = CATEGORIES.filter(category => category !== "Все категории");
+ function toggle(category: string) { onChange(selected.includes(category) ? selected.filter(item => item !== category) : [...selected, category]); }
+ return (
+  <section className="rounded-2xl bg-card p-4 shadow-border">
+   <div className="flex items-center gap-2 text-sm font-bold text-ink"><GridIcon className="h-4 w-4 text-brand-red-bright" />Категории</div>
+   <div className="mt-3 flex flex-wrap gap-2">
+    {choices.map(category => { const active = selected.includes(category); return <button type="button" key={category} onClick={() => toggle(category)} className={`press rounded-full px-3.5 py-2 text-sm font-semibold shadow-border ${active ? "bg-brand-red text-white" : "bg-raise text-ink"}`}>{category}</button> })}
+   </div>
+   {selected.length ? <div className="mt-4 flex min-w-0 flex-wrap items-center gap-2"><span className="text-xs text-ink-muted">Выбрано:</span>{selected.map(category => <span key={category} className="max-w-full truncate rounded-full bg-brand-red/15 px-2.5 py-1 text-xs font-semibold text-brand-red-bright">{category}</span>)}<button type="button" onClick={() => onChange([])} className="text-xs font-semibold text-ink-muted">Очистить</button></div> : <p className="mt-3 text-xs text-ink-muted">Без выбора показываются все категории</p>}
+  </section>
+ );
 }
