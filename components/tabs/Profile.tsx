@@ -657,6 +657,12 @@ function PaymentSheet({
           setErr(
             j.error === "payments-disabled"
               ? "Приём платежей временно отключён"
+              : j.error === "unauthorized"
+              ? "Ошибка авторизации Telegram — откройте приложение внутри Telegram"
+              : j.error === "server-misconfigured"
+              ? "Сервер не настроен (нет TELEGRAM_BOT_TOKEN)"
+              : j.detail
+              ? "Ошибка оплаты: " + j.detail
               : "Не удалось создать счёт"
           );
         }

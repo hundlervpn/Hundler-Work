@@ -18,6 +18,7 @@ function baseUrl(req: NextRequest): string {
 export async function POST(req: NextRequest) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   if (!botToken) {
+    console.error("[deposit] server-misconfigured: TELEGRAM_BOT_TOKEN is not set");
     return NextResponse.json({ error: "server-misconfigured" }, { status: 500 });
   }
   if (!OXAPAY_CONFIGURED) {
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
 
   const tg = initData ? parseAndValidate(initData, botToken) : null;
   if (!tg) {
+    console.error("[deposit] unauthorized: initData present=", Boolean(initData), "len=", initData ? initData.length : 0);
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   if (!Number.isFinite(amount) || amount <= 0) {
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
       [invoice.trackId, invoice.paymentUrl, depositId]
     );
 
+    console.log("[deposit] invoice created:", depositId, invoice.trackId);
     return NextResponse.json({
       ok: true,
       depositId,
@@ -83,6 +86,7 @@ export async function POST(req: NextRequest) {
       paymentUrl: invoice.paymentUrl,
     });
   } catch (e: any) {
+    console.error("[deposit] oxapay-failed:", e?.message || e);
     await pool.query(
       `UPDATE deposits SET status = 'failed', updated_at = now() WHERE id = $1;`,
       [depositId]
