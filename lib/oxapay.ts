@@ -5,6 +5,15 @@ const OXAPAY_BASE = "https://api.oxapay.com/v1";
 const MERCHANT_KEY = process.env.OXAPAY_MERCHANT_API_KEY || "";
 const PAYOUT_KEY = process.env.OXAPAY_PAYOUT_API_KEY || "";
 
+// OxaPay возвращает error: {} (пустой объект) даже при успехе.
+// Ошибкой считаем только HTTP-провал или НЕПУСТОЙ error.
+function oxaHasError(json: any): boolean {
+  const e = json && json.error;
+  if (!e) return false;
+  if (typeof e === "object") return Object.keys(e).length > 0;
+  return true;
+}
+
 export type CreateInvoiceParams = {
   amount: number;
   currency?: string; // например "USDT". Если не указать — сумма трактуется как USD.
@@ -57,7 +66,7 @@ export async function createInvoice(
 
   const json = await res.json().catch(() => null);
 
-  if (!res.ok || !json || json.error) {
+  if (!res.ok || !json || oxaHasError(json)) {
     const msg =
       json?.error?.message || json?.message || `OxaPay error (${res.status})`;
     throw new Error(`OxaPay createInvoice failed: ${msg}`);
@@ -124,7 +133,7 @@ export async function createPayout(
 
   const json = await res.json().catch(() => null);
 
-  if (!res.ok || !json || json.error) {
+  if (!res.ok || !json || oxaHasError(json)) {
     const msg =
       json?.error?.message || json?.message || `OxaPay error (${res.status})`;
     throw new Error(`OxaPay createPayout failed: ${msg}`);
